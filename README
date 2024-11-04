@@ -1,0 +1,12 @@
+Dependancies : 
+flask, 
+flask-login, 
+flask-sqlalchemy, 
+flask-wtf, 
+flask-migrate, 
+
+email-validator, 
+tzdata, 
+h5py
+
+plotly.min.js downloaded from [TODO] 

@@ -1,0 +1,44 @@
+{% extends "admin.html" %}
+
+{% block content %}
+
+</div>
+<table>
+    <caption>
+        Wykres {{ chart_id }}
+    </caption>
+    <thead>
+        <tr>
+        <th scope="col">ID głosu</th>
+        <td scope="col">Głos</td>
+        <td scope="col">Użytkownik</td>
+        <td scope="col">Data głosu</td>
+        <td scope="col">Numer rewizji</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for vote in votes_to_display %}
+            <tr>
+                <th scope="row">{{ vote.vote_id }}</th>
+                <td>{{ vote.user_vote }}</td>
+                <td>{{ vote.interacting_user }}</td>
+                <td>{{ vote.vote_time }}</td>
+                <td>{{ vote.revision_number }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+    <div>
+        {% if prev_page %}
+            <a href = "{{ url_for('admin_charts_detail', chart_id = chart_id , page=prev_page ) }}">Previous</a>
+        {% endif %}
+        <span>
+            Page {{ current_page }} of {{ total_pages }}
+        </span>
+        {% if next_page %}
+            <a href="{{ url_for('admin_charts_detail', chart_id = chart_id , page=next_page ) }}">Next</a>
+        {% endif %}
+    </div>
+
+{% endblock %}
