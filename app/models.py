@@ -70,10 +70,10 @@ class Chart(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     chart_data: so.Mapped[str] = so.mapped_column(sa.String(100), default="[PLACEHOLDER]")
     
-    model_timespans: so.WriteOnlyMapped['Model_Timespans'] = so.relationship(back_populates='chart')
-    user_timespans: so.WriteOnlyMapped['User_Timespans'] = so.relationship(back_populates='chart')
+    model_timespans: so.Mapped['Model_Timespans'] = so.relationship(back_populates='chart')
+    user_timespans: so.Mapped['User_Timespans'] = so.relationship(back_populates='chart')
 
-    chart_votes: so.WriteOnlyMapped["Vote"] = so.relationship(back_populates='chart')
+    chart_votes: so.Mapped['Vote'] = so.relationship(back_populates='chart')
 
 class Model_Timespans(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
@@ -81,7 +81,7 @@ class Model_Timespans(db.Model):
     model_timespan_end: so.Mapped[float] = so.mapped_column(sa.Float, nullable=False)
     chart_id: so.Mapped[int] = so.mapped_column(sa.Integer, sa.ForeignKey('chart.id'), nullable=False)
 
-    chart: so.WriteOnlyMapped['Chart'] = so.relationship(back_populates='model_timespans')
+    chart: so.Mapped['Chart'] = so.relationship(back_populates='model_timespans')
 
 class User_Timespans(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
@@ -89,4 +89,4 @@ class User_Timespans(db.Model):
     user_timespan_end: so.Mapped[float] = so.mapped_column(sa.Float, nullable=False)
     chart_id: so.Mapped[int] = so.mapped_column(sa.Integer, sa.ForeignKey('chart.id'), nullable=False)
 
-    chart: so.WriteOnlyMapped['Chart'] = so.relationship(back_populates='user_timespans')
+    chart: so.Mapped['Chart'] = so.relationship(back_populates='user_timespans')

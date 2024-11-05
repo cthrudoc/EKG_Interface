@@ -7,3 +7,5 @@ logs/
 
 app/EKGs/TestEKG_converted.h5
 app/static/testEKG.json
+
+ECG_Interface.code-workspace
