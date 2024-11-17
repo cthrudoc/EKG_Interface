@@ -6,7 +6,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as so
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm
-from app.models import User, User_Login, Chart, Vote, Post
+from app.models import User, User_Login, Chart, Vote, Post, Model_Timespans
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 import h5py
@@ -217,7 +217,7 @@ filepath = 'app/EKGs/TestEKG_converted.h5'
 
 @app.route('/api/ecg/<int:fragment_id>')
 def api(fragment_id):
-    ragment = None
+    fragment = None
     for f in FRAGMENTS:
         if f["id"] == fragment_id:
             fragment = f
@@ -241,6 +241,21 @@ def api(fragment_id):
                 "ch3": f['ch3'][strt_w_cntxt:end_w_cntxt].tolist(),
             }
         })
+
+@app.route('/api/timespans/<int:chart_id>', methods=['GET'])
+def get_timespans(chart_id):
+    # Retrieve the timespans for the specified chart
+    timespans = db.session.scalars(
+        sa.select(Model_Timespans).where(Model_Timespans.chart_id == chart_id)
+    ).all()
+
+    # Return the timespans as JSON
+    return jsonify([{
+        "id": timespan.id,
+        "start": timespan.model_timespan_start,
+        "end": timespan.model_timespan_end
+    } for timespan in timespans])
+
 
 @app.errorhandler(404)
 def not_found_error(error):

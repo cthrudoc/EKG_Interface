@@ -1,12 +1,33 @@
 {% extends "base.html" %}
 {% block content %}
 
-    <!-- Testowanie plotly.js -->
+    <!-- Wyświetlanie wykresów -->
     <script src="{{ url_for('static', filename='js/plotly.min.js') }}"></script>
     <div id="tester1"></div>
     <div id="tester2"></div>
     <div id="tester3"></div>
+    <div id="timespan-table" style="margin-left: 20px;"></div>
     <script src="{{ url_for('static', filename='js/testing.js') }}"></script>
+
+    <!-- Wyświetlanie tabeli  -->
+    <div style="flex: 1; padding-left: 20px;">
+        <h4>Timespans</h4>
+        <table id="timespanTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Start (s)</th>
+                    <th>End (s)</th>
+                </tr>
+            </thead>
+            <tbody id="timespanTableBody">
+                <!-- Populated dynamically by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/testing.js') }}"></script>
 
 {% endblock %}
 
