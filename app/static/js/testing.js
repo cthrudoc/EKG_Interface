@@ -54,6 +54,9 @@ document.addEventListener('DOMContentLoaded', function() {
             ];
 
             // Add calibration pulse
+            /*
+            // [BUG] IS DISPLAYED ON FIXED X, CHANGE TO DYNAMIC OR DISABLE COMPLETELY
+            // [BUG] Needs to be added to the plots when they are created 
             const calibrationPulse = {
                 x: [0, 0, 0.2, 0.2],
                 y: [0, 1, 1, 0],
@@ -66,6 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 showlegend: false
             };
+            */
 
             const layout = {    
                 plot_bgcolor: '#FFF4F4',
@@ -151,6 +155,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         line: { width: 0 }
                     }
                 ],
+                /*
+                // [BUG] Do those annotations even make sense in dynamic context of the app? 
                 annotations: [
                     {
                         x: 0.02,
@@ -177,6 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }
                 ],
+                */
                 showlegend: true,
                 legend: {
                     font: { color: '#000000' },
@@ -199,8 +206,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }]
             };
 
-            // Create plots with range sliders
-            Plotly.newPlot(tester1, [traces[0], calibrationPulse], layout, config);
+            // Create plots with range sliders 
+            // [BUG] After traces[] in the first plot, I deleted calibratonPulse because I disabled it. If fixed later, can be added later. 
+            Plotly.newPlot(tester1, [traces[0]], layout, config);
             Plotly.newPlot(tester2, [traces[1]], layout, config);
             Plotly.newPlot(tester3, [traces[2]], layout, config);
 

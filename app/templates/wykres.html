@@ -1,12 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{{ chart_id }}, {{ chart_data }}</h1>
+    <!-- [TODO] Debugging line, remove in prod -->
+    <h1>Debugging : {{ chart_id }}, {{ chart_data }},{{ initial_timespan }} {{ timespan_data }}</h1> 
+    
+    <!-- Assigning Jinja code to a div because if I do it inside <script> then it get's interpretet as js code and crashes -->
+    <div id='chart_data' data_chart_id='{{ chart_id }}' data_timespan_data='{{ timespan_data }}' data_initial_timespan="'{{initial_timespan}}"></div>
+    <script>
+        const chart_element = document.getElementById('chart_data');
+        const initial_chart_id = chart_element.getAttribute('data_chart_id');
+        const initial_timespan_data = chart_element.getAttribute('data_initial_timespan');
+        const timespan_data = chart_element.get('data_timespan_data')
+    </script>
 
+    <!-- Displaying chart and votes -->
     <form method="GET">
         <input type="hidden" name="chart_id" value="{{ chart_id }}">
+        <!-- [TODO] Disabled the code for voting in /wykres route, so disabled the buttons until it's relocated. 
         <button type="submit" value="0" name="vote">Głos -</button>
         <button type="submit" value="1" name="vote">Głos +</button>
+        -->
     </form>
 
     <a href="{{ url_for('wykres', chart_id=chart_id-1) }}" class="button">Poprzedni</a>

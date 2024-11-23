@@ -281,7 +281,9 @@ def wykres():
     # zapisywanie wyświetlanego wykresu jako ostatniego zapisanego
     user.last_chart = chart_id
     db.session.commit()
+    """
     #zapis oceny
+    # [TODO] Move to separate api route
     submitted_vote = request.args.get('vote')
     form_chart_id = request.args.get('chart_id')
     if submitted_vote is not None and form_chart_id == str(chart_id):
@@ -298,8 +300,30 @@ def wykres():
         new_vote = Vote(user_vote = submitted_vote, interacting_user = user.id, chart_id = chart.id, revision_number = new_revision_number)
         db.session.add(new_vote)
         db.session.commit()
+    """
 
-    return render_template("wykres.html", chart_data=chart_data, chart_id = chart_id)    
+    # Getting timespans for the curent chart 
+    timespans = db.session.execute(
+        sa.select(Model_Timespans).where(Model_Timespans.chart_id == chart_id)
+    ).scalars().all()
+    timespan_data = [
+        {"start_time": ts.model_timespan_start, "end_time": ts.model_timespan_end}
+        for ts in timespans
+    ]
+    
+    # Initial timespan from which the first chart will be drawn.
+    if timespan_data:
+        initial_timespan_raw = timespan_data[0]
+        initial_timespan = {
+            "start_time": initial_timespan_raw["start_time"] - 60,
+            "end_time": initial_timespan_raw["end_time"] + 60
+        }
+    else:
+        initial_timespan = None
+
+
+
+    return render_template("wykres.html", chart_data=chart_data, chart_id = chart_id, timespan_data = timespan_data, initial_timespan = initial_timespan )    
 
 @app.route('/admin')
 @admin_required
