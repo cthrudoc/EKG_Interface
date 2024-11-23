@@ -68,7 +68,7 @@ class Vote(db.Model):
 
 class Chart(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    chart_data: so.Mapped[str] = so.mapped_column(sa.String(100), default="[PLACEHOLDER]")
+    chart_data: so.Mapped[str] = so.mapped_column(sa.String(100), default="[PLACEHOLDER]") # [TODO] REMINDER : You replaced the placeholders with fixed adress to the hdf5 file.
     
     model_timespans: so.Mapped['Model_Timespans'] = so.relationship(back_populates='chart')
     user_timespans: so.Mapped['User_Timespans'] = so.relationship(back_populates='chart')

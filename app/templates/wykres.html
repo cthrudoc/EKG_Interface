@@ -4,16 +4,37 @@
     <!-- [TODO] Debugging line, remove in prod -->
     <h1>Debugging : {{ chart_id }}, {{ chart_data }},{{ initial_timespan }} {{ timespan_data }}</h1> 
     
-    <!-- Assigning Jinja code to a div because if I do it inside <script> then it get's interpretet as js code and crashes -->
-    <div id='chart_data' data_chart_id='{{ chart_id }}' data_timespan_data='{{ timespan_data }}' data_initial_timespan="'{{initial_timespan}}"></div>
-    <script>
-        const chart_element = document.getElementById('chart_data');
-        const initial_chart_id = chart_element.getAttribute('data_chart_id');
-        const initial_timespan_data = chart_element.getAttribute('data_initial_timespan');
-        const timespan_data = chart_element.get('data_timespan_data')
-    </script>
+    <!-- Wyświetlanie wykresów -->
+    <script src="{{ url_for('static', filename='js/plotly.min.js') }}"></script>
+    <div id="tester1"></div>
+    <div id="tester2"></div>
+    <div id="tester3"></div>
+    <div id="timespan-table" style="margin-left: 20px;"></div>
+    <script src="{{ url_for('static', filename='js/testing.js') }}"></script>
 
-    <!-- Displaying chart and votes -->
+    <!-- Displayng table  -->
+    <div id="chart-container" style="display: flex;">
+        <div id="charts" style="flex: 3;">
+            <div id="tester1"></div>
+            <div id="tester2"></div>
+            <div id="tester3"></div>
+        </div>
+        <div id="timespan-table-container" style="flex: 1; padding-left: 10px;">
+            <table id="timespan-table" border="1" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Timespans will be dynamically loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- [TODO] Old and redundant Displaying chart and votes -->
     <form method="GET">
         <input type="hidden" name="chart_id" value="{{ chart_id }}">
         <!-- [TODO] Disabled the code for voting in /wykres route, so disabled the buttons until it's relocated. 

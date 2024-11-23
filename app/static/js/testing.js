@@ -2,12 +2,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const tester1 = document.getElementById('tester1');
     const tester2 = document.getElementById('tester2');
     const tester3 = document.getElementById('tester3');
+    const timespanTable = document.getElementById('timespanTable');
     const allPlots = [tester1, tester2, tester3];
 
-    fetch('/api/ecg/1')
+    fetch('/api/wykres')
         .then(response => response.json())
         .then(data => {
-            const ecgData = data.ECG;
+            console.log('Received data:', data);  // [DEBUG] 
+            const ecgData = data.initial_chart_data.ECG;
             
             // Calculate the data bounds
             const xMin = Math.min(...ecgData.time);
@@ -213,6 +215,50 @@ document.addEventListener('DOMContentLoaded', function() {
             Plotly.newPlot(tester3, [traces[2]], layout, config);
 
             console.log("Charts created successfully");
+
+            fetch('/api/timespans')
+                .then(response => response.json())
+                .then(timespans => {
+                    console.log('Timespans:', timespans);
+
+                    // Populate the table with timespan data
+                    timespans.forEach((timespan, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${timespan.start.toFixed(2)}</td>
+                            <td>${timespan.end.toFixed(2)}</td>
+                            <td>
+                                <button class="load-timespan" data-start="${timespan.start}" data-end="${timespan.end}">
+                                    Load
+                                </button>
+                            </td>
+                        `;
+                        timespanTable.appendChild(row);
+                    });
+
+                    // [NEW] Add event listeners to load buttons
+                    document.querySelectorAll('.load-timespan').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const start = parseFloat(this.dataset.start);
+                            const end = parseFloat(this.dataset.end);
+                            const extendedStart = Math.max(xMin, start - 0);
+                            const extendedEnd = Math.min(xMax, end + 0);
+
+                            console.log(`Loading timespan: ${extendedStart} to ${extendedEnd}`);
+                            allPlots.forEach(plot => {
+                                Plotly.relayout(plot, {
+                                    'xaxis.range': [extendedStart, extendedEnd]
+                                });
+                            });
+                        });
+                    });
+
+                    console.log("Timespan table populated and event listeners added");
+                })
+                .catch(error => {
+                    console.error('Error fetching timespans:', error);
+                });
 
             // Debounce function to limit the frequency of updates
             function debounce(func, wait) {

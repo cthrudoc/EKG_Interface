@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 import h5py
 import numpy
+import requests
 
 wars_tz = ZoneInfo('Europe/Warsaw')
 
@@ -214,6 +215,7 @@ FRAGMENTS = [
     {"id": 2, "start": 360, "end": 420},  # 6-7 minute mark
 ]
 filepath = 'app/EKGs/TestEKG_converted.h5'
+context = 120 # czas dodany po obu stronach fragmentu w sekundach 
 
 @app.route('/api/ecg/<int:fragment_id>')
 def api(fragment_id):
@@ -225,7 +227,6 @@ def api(fragment_id):
     if not fragment:
         return jsonify({"error": "Fragment not found"}), 404
 
-    context = 120 # czas dodany po obu stronach fragmentu w sekundach 
     start_time = max(0, fragment["start"] - context) 
     end_time = fragment["end"] + context 
 
@@ -315,15 +316,120 @@ def wykres():
     if timespan_data:
         initial_timespan_raw = timespan_data[0]
         initial_timespan = {
-            "start_time": initial_timespan_raw["start_time"] - 60,
-            "end_time": initial_timespan_raw["end_time"] + 60
+            "start_time": max(0, initial_timespan_raw["start_time"] - context),
+            "end_time": initial_timespan_raw["end_time"] + context
         }
     else:
-        initial_timespan = None
+        initial_timespan = None 
+
+    # Chart data for the initial timespan 
+    if timespan_data:
+        with h5py.File(filepath, 'r') as f:
+            time_data = f['time'][:] 
+            strt_w_cntxt = numpy.searchsorted(time_data, initial_timespan["start_time"])
+            end_w_cntxt = numpy.searchsorted(time_data, initial_timespan["end_time"]) 
+            initial_timespan_data = jsonify({
+                "ECG": {
+                    "time": f['time'][strt_w_cntxt:end_w_cntxt].tolist(),
+                    "ch1": f['ch1'][strt_w_cntxt:end_w_cntxt].tolist(),
+                    "ch2": f['ch2'][strt_w_cntxt:end_w_cntxt].tolist(),
+                    "ch3": f['ch3'][strt_w_cntxt:end_w_cntxt].tolist(),
+                }
+            })
+    else:
+        initial_timespan_data = None
 
 
 
-    return render_template("wykres.html", chart_data=chart_data, chart_id = chart_id, timespan_data = timespan_data, initial_timespan = initial_timespan )    
+    return render_template("wykres.html", chart_data=chart_data, chart_id = chart_id, timespan_data = timespan_data, initial_timespan = initial_timespan , initial_timespan_data = initial_timespan_data)    
+
+@app.route('/api/wykres')
+@login_required
+def api_wykres(): 
+    ## Getting the right chart
+    user = db.first_or_404(sa.select(User).where(User.id == current_user.id)) # wczytanie obiektu użytkownik 
+    chart_id = request.args.get('chart_id', default = None, type = int)
+    if chart_id: # wyświetlanie podanego wykresu, jeżeli nie podany, domyślnie ostatni wykres
+        chart = db.first_or_404(sa.select(Chart).where(Chart.id == chart_id))
+    else:
+        chart = db.first_or_404(sa.select(Chart).where(Chart.id == user.last_chart))
+        chart_id = chart.id
+    chart_data = chart.chart_data 
+    # zapisywanie wyświetlanego wykresu jako ostatniego zapisanego
+    user.last_chart = chart_id
+    db.session.commit()
+
+    ## Getting timespans for the curent chart 
+    timespans = db.session.execute(
+        sa.select(Model_Timespans).where(Model_Timespans.chart_id == chart_id)
+    ).scalars().all()
+    timespan_data = [
+        {"start_time": ts.model_timespan_start, "end_time": ts.model_timespan_end}
+        for ts in timespans
+    ]
+    
+    ## Initial timespan from which the first chart will be drawn 
+    if timespan_data:
+        initial_timespan_raw = timespan_data[0]
+        initial_timespan = {
+            "start_time": max(0, initial_timespan_raw["start_time"] - context),
+            "end_time": initial_timespan_raw["end_time"] + context
+        }
+
+    ## Getting data to draw the initial timespan
+    chart_data_response = requests.get(
+        url_for('api_chart_data', _external=True), # _external allows generating full URL that enables it to connect 
+        params={
+            "chart_id": chart_id, 
+            "start_time": initial_timespan["start_time"], 
+            "end_time": initial_timespan["end_time"]}
+    )
+    if chart_data_response.status_code != 200: # catching error
+        return jsonify({"error": "Failed to fetch initial chart data"}), 500
+    initial_chart_data = chart_data_response.json() 
+
+    return jsonify({
+        "chart_id": chart_id,
+        "timespans": timespan_data,
+        "initial_timespan": initial_timespan,
+        "initial_chart_data": initial_chart_data,
+    })
+
+@app.route('/api/chart_data')
+def api_chart_data():
+
+    ## Getting data for processing request
+    chart_id = request.args.get('chart_id', type=float)
+    start_time = request.args.get('start_time', type=float)
+    end_time = request.args.get('end_time', type=float)
+    if start_time is None or end_time is None: # catching error 
+        return jsonify({"error": "start and end times are required"}), 400
+    
+    ## Getting the file path to charts hdf5 file
+    filepath = db.session.execute(sa.select(Chart.chart_data).where(Chart.id == chart_id)).scalar()
+    print(f'[api/chart_data]: charts filepath retrieved - {filepath}.') # [DEBUG] 
+    if not filepath: # Error catching
+        return jsonify({"error": "Chart file path not found"}), 404
+
+    ## Getting chart data from charts hdf5 file
+    with h5py.File(filepath, 'r') as f:
+            time_data = f['time'][:] 
+            strt_w_cntxt = numpy.searchsorted(time_data, start_time)
+            end_w_cntxt = numpy.searchsorted(time_data, end_time) 
+            chart_data = jsonify({
+                "ECG": {
+                    "time": f['time'][strt_w_cntxt:end_w_cntxt].tolist(),
+                    "ch1": f['ch1'][strt_w_cntxt:end_w_cntxt].tolist(),
+                    "ch2": f['ch2'][strt_w_cntxt:end_w_cntxt].tolist(),
+                    "ch3": f['ch3'][strt_w_cntxt:end_w_cntxt].tolist(),
+                }
+            })
+    
+    return chart_data
+
+
+
+####################### ADMIN TERRITORY #######################
 
 @app.route('/admin')
 @admin_required
