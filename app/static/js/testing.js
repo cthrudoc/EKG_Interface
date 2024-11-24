@@ -8,9 +8,12 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch('/api/wykres')
         .then(response => response.json())
         .then(data => {
-            console.log('Received data:', data);  // [DEBUG] 
+            console.log('[wykres.js] Received data:', data);  // [DEBUG] 
             const ecgData = data.initial_chart_data.ECG;
-            
+            const timespans = data.timespans || [];
+            console.log('[wykres.js] Timespans:', timespans); // [DEBUG]
+            let chartId = data.chart_id
+
             // Calculate the data bounds
             const xMin = Math.min(...ecgData.time);
             const xMax = Math.max(...ecgData.time);
@@ -54,6 +57,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             ];
+
+            let shapes_coordinates = timespans.length > 0
+            ? { x0: timespans[0].start_time, x1: timespans[0].end_time }
+            : { x0: 0, x1: 0 }; // Default to avoid errors if timespans is empty
 
             // Add calibration pulse
             /*
@@ -131,32 +138,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 margin: { t: 40, r: 50, l: 50, b: 40 },
                 modeBarButtonsToRemove: ['select2d', 'lasso2d'],
                 displaylogo: false,
-                shapes: [
-                    {
-                        type: 'rect',
-                        xref: 'paper',
-                        yref: 'paper',
-                        x0: 0,
-                        y0: 0,
-                        x1: 1,
-                        y1: 1,
-                        fillcolor: 'transparent',
-                        line: {
-                            width: 1,
-                            color: '#FF0000'
-                        }
-                    },
-                    {
-                        type: 'rect',
-                        x0: 130.0,
-                        x1: 135.0,
-                        y0: 0, 
-                        y1: 1,
-                        yref: 'paper',
-                        fillcolor: 'rgba(255, 0, 0, 0.15)', 
-                        line: { width: 0 }
-                    }
-                ],
+                shapes: [{
+                    type: 'rect',
+                    xref: 'x',
+                    yref: 'paper',
+                    x0: shapes_coordinates.x0,
+                    x1: shapes_coordinates.x1,
+                    y0: 0,
+                    y1: 1,
+                    fillcolor: 'rgba(0, 255, 0, 0.2)',
+                    line: { width: 0 }
+                }] , // Shapes set outside as a let so they can get updated
                 /*
                 // [BUG] Do those annotations even make sense in dynamic context of the app? 
                 annotations: [
@@ -216,49 +208,90 @@ document.addEventListener('DOMContentLoaded', function() {
 
             console.log("Charts created successfully");
 
-            fetch('/api/timespans')
-                .then(response => response.json())
-                .then(timespans => {
-                    console.log('Timespans:', timespans);
 
-                    // Populate the table with timespan data
-                    timespans.forEach((timespan, index) => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${index + 1}</td>
-                            <td>${timespan.start.toFixed(2)}</td>
-                            <td>${timespan.end.toFixed(2)}</td>
-                            <td>
-                                <button class="load-timespan" data-start="${timespan.start}" data-end="${timespan.end}">
-                                    Load
-                                </button>
-                            </td>
-                        `;
-                        timespanTable.appendChild(row);
-                    });
+            // Populate the table with timespan data
+            timespans.forEach((timespan, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${timespan.start_time.toFixed(2)}</td>
+                    <td>${timespan.end_time.toFixed(2)}</td>
+                    <td>
+                        <button class="load-timespan" data-start="${timespan.start_time}" data-end="${timespan.end_time}">
+                            Load
+                        </button>
+                    </td>
+                `;
+                timespanTable.appendChild(row);
+            });
 
-                    // [NEW] Add event listeners to load buttons
-                    document.querySelectorAll('.load-timespan').forEach(button => {
-                        button.addEventListener('click', function() {
-                            const start = parseFloat(this.dataset.start);
-                            const end = parseFloat(this.dataset.end);
-                            const extendedStart = Math.max(xMin, start - 0);
-                            const extendedEnd = Math.min(xMax, end + 0);
+            // [NEW] Add event listeners to load buttons
+            document.querySelectorAll('.load-timespan').forEach(button => {
+                button.addEventListener('click', function() {
+                    const start = parseFloat(this.dataset.start);
+                    const end = parseFloat(this.dataset.end);
+                    const extendedStart = Math.max(xMin, start - 0);
+                    const extendedEnd = Math.min(xMax, end + 0);
 
-                            console.log(`Loading timespan: ${extendedStart} to ${extendedEnd}`);
-                            allPlots.forEach(plot => {
-                                Plotly.relayout(plot, {
-                                    'xaxis.range': [extendedStart, extendedEnd]
-                                });
-                            });
+                    console.log(`[wykres.js] Loading timespan: ${extendedStart} to ${extendedEnd}`);
+                    
+                    allPlots.forEach(plot => {
+                        Plotly.relayout(plot, {
+                            'xaxis.range': [extendedStart, extendedEnd]
                         });
                     });
 
-                    console.log("Timespan table populated and event listeners added");
+                // Update shapes_coordinates
+                shapes_coordinates = { x0: start, x1: end };
+                console.log('[wykres.js] Updated shapes_coordinates:', shapes_coordinates);
+
+                // Apply the new shape
+                allPlots.forEach(plot => {
+                    Plotly.relayout(plot, {
+                        shapes: [{
+                            type: 'rect',
+                            xref: 'x',
+                            yref: 'paper',
+                            x0: shapes_coordinates.x0,
+                            x1: shapes_coordinates.x1,
+                            y0: 0,
+                            y1: 1,
+                            fillcolor: 'rgba(0, 255, 0, 0.2)',
+                            line: { width: 0 }
+                }]
+            });
+
+            // Fetch new chart data from the API
+            fetch(`/api/chart_data?chart_id=${chartId}&start_time=${start}&end_time=${end}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Error fetching chart data: ${response.statusText}`);
+                    }
+                    return response.json();
                 })
-                .catch(error => {
-                    console.error('Error fetching timespans:', error);
+                .then(chartData => {
+                    console.log('[wykres.js] New chart data received:', chartData);
+
+                    // Update the charts with the new data
+                    const ecgData = chartData.ECG;
+                    const updatedData = [
+                        { x: ecgData.time, y: ecgData.ch1, name: 'Channel 1' },
+                        { x: ecgData.time, y: ecgData.ch2, name: 'Channel 2' },
+                        { x: ecgData.time, y: ecgData.ch3, name: 'Channel 3' }
+                    ];
+
+                    allPlots.forEach((plot, idx) => {
+                        Plotly.react(plot, [updatedData[idx]], layout);
+                    });
+                })
+                .catch(error => console.error('[wykres.js] Error fetching or updating chart data:', error));
+
+                });     
                 });
+                });
+
+                console.log("Timespan table populated and event listeners added");
+
 
             // Debounce function to limit the frequency of updates
             function debounce(func, wait) {

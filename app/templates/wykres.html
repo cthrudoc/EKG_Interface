@@ -2,7 +2,7 @@
 
 {% block content %}
     <!-- [TODO] Debugging line, remove in prod -->
-    <h1>Debugging : {{ chart_id }}, {{ chart_data }},{{ initial_timespan }} {{ timespan_data }}</h1> 
+    <!--<h1>Debugging : {{ chart_id }}, {{ chart_data }},{{ initial_timespan }} {{ timespan_data }}</h1> -->
     
     <!-- Wyświetlanie wykresów -->
     <script src="{{ url_for('static', filename='js/plotly.min.js') }}"></script>
@@ -20,7 +20,7 @@
             <div id="tester3"></div>
         </div>
         <div id="timespan-table-container" style="flex: 1; padding-left: 10px;">
-            <table id="timespan-table" border="1" style="width: 100%;">
+            <table id="timespanTable" border="1" style="width: 100%;">
                 <thead>
                     <tr>
                         <th>Start Time</th>
@@ -43,7 +43,18 @@
         -->
     </form>
 
-    <a href="{{ url_for('wykres', chart_id=chart_id-1) }}" class="button">Poprzedni</a>
-    <a href="{{ url_for('wykres', chart_id=chart_id+1) }}" class="button">Następny</a>
+    <div class="pagination">
+        {% if prev_chart_id %}
+            <a href="{{ url_for('wykres', chart_id=prev_chart_id) }}" class="button">Poprzedni</a>
+        {% else %}
+            <span class="button disabled">Poprzedni</span>
+        {% endif %}
+        
+        {% if next_chart_id %}
+            <a href="{{ url_for('wykres', chart_id=next_chart_id) }}" class="button">Następny</a>
+        {% else %}
+            <span class="button disabled">Następny</span>
+        {% endif %}
+    </div>
 
 {% endblock %}

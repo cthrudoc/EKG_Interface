@@ -12,6 +12,7 @@ from zoneinfo import ZoneInfo
 import h5py
 import numpy
 import requests
+import json
 
 wars_tz = ZoneInfo('Europe/Warsaw')
 
@@ -166,7 +167,7 @@ def edit_profile():
     return render_template('edit_profile.html', title='Edit Profile',
                            form=form)
 
-
+# [TODO][BUG] Legacy code, dispose. 
 @app.route('/testing', methods=['GET','POST'])
 @login_required
 def testing():
@@ -215,8 +216,9 @@ FRAGMENTS = [
     {"id": 2, "start": 360, "end": 420},  # 6-7 minute mark
 ]
 filepath = 'app/EKGs/TestEKG_converted.h5'
-context = 120 # czas dodany po obu stronach fragmentu w sekundach 
+context = 30 # czas dodany po obu stronach fragmentu w sekundach 
 
+# [TODO][BUG] Legacy code, dispose. 
 @app.route('/api/ecg/<int:fragment_id>')
 def api(fragment_id):
     fragment = None
@@ -271,6 +273,7 @@ def internal_error(error):
 @login_required
 @admin_prohibited
 def wykres(): 
+
     user = db.first_or_404(sa.select(User).where(User.id == current_user.id)) # wczytanie obiektu użytkownik 
     chart_id = request.args.get('chart_id', default = None, type = int)
     if chart_id: # wyświetlanie podanego wykresu, jeżeli nie podany, domyślnie ostatni wykres
@@ -278,6 +281,15 @@ def wykres():
     else:
         chart = db.first_or_404(sa.select(Chart).where(Chart.id == user.last_chart))
         chart_id = chart.id
+
+    total_charts = db.session.query(sa.func.count(Chart.id)).scalar() # Total number of votes. 
+    # Determine previous and next chart IDs
+    prev_chart_id = chart_id - 1 if chart_id > 1 else None
+    next_chart_id = chart_id + 1 if chart_id < total_charts else None
+
+
+    ## [TODO][BUG] Code below likely redundant with the exception of return at the end. 
+
     chart_data = chart.chart_data 
     # zapisywanie wyświetlanego wykresu jako ostatniego zapisanego
     user.last_chart = chart_id
@@ -340,21 +352,21 @@ def wykres():
         initial_timespan_data = None
 
 
-
-    return render_template("wykres.html", chart_data=chart_data, chart_id = chart_id, timespan_data = timespan_data, initial_timespan = initial_timespan , initial_timespan_data = initial_timespan_data)    
+    # [TODO] Things in the second line are redundant, but clear all of the function at once. 
+    return render_template("wykres.html", chart_data=chart_data, chart_id = chart_id, prev_chart_id=prev_chart_id, next_chart_id=next_chart_id, 
+        timespan_data = timespan_data, initial_timespan = initial_timespan , initial_timespan_data = initial_timespan_data)    
 
 @app.route('/api/wykres')
 @login_required
 def api_wykres(): 
     ## Getting the right chart
     user = db.first_or_404(sa.select(User).where(User.id == current_user.id)) # wczytanie obiektu użytkownik 
-    chart_id = request.args.get('chart_id', default = None, type = int)
+    chart_id = request.args.get('chart_id', default = 1, type = int)
     if chart_id: # wyświetlanie podanego wykresu, jeżeli nie podany, domyślnie ostatni wykres
         chart = db.first_or_404(sa.select(Chart).where(Chart.id == chart_id))
     else:
         chart = db.first_or_404(sa.select(Chart).where(Chart.id == user.last_chart))
         chart_id = chart.id
-    chart_data = chart.chart_data 
     # zapisywanie wyświetlanego wykresu jako ostatniego zapisanego
     user.last_chart = chart_id
     db.session.commit()
@@ -388,23 +400,30 @@ def api_wykres():
         return jsonify({"error": "Failed to fetch initial chart data"}), 500
     initial_chart_data = chart_data_response.json() 
 
-    return jsonify({
+    response_data = {
         "chart_id": chart_id,
         "timespans": timespan_data,
-        "initial_timespan": initial_timespan,
+        "initial_timespan": [initial_timespan],
         "initial_chart_data": initial_chart_data,
-    })
+    }
+
+    # print(json.dumps(response_data, indent=4)) # [DEBUG]
+
+    return jsonify(response_data)
 
 @app.route('/api/chart_data')
 def api_chart_data():
 
     ## Getting data for processing request
     chart_id = request.args.get('chart_id', type=float)
-    start_time = request.args.get('start_time', type=float)
-    end_time = request.args.get('end_time', type=float)
-    if start_time is None or end_time is None: # catching error 
+    start_time_raw = request.args.get('start_time', type=float)
+    end_time_raw = request.args.get('end_time', type=float)
+    if start_time_raw is None or end_time_raw is None: # catching error 
         return jsonify({"error": "start and end times are required"}), 400
     
+    start_time = max(0, start_time_raw - context)
+    end_time = end_time_raw + context
+
     ## Getting the file path to charts hdf5 file
     filepath = db.session.execute(sa.select(Chart.chart_data).where(Chart.id == chart_id)).scalar()
     print(f'[api/chart_data]: charts filepath retrieved - {filepath}.') # [DEBUG] 
