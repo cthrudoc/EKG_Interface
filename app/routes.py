@@ -14,10 +14,18 @@ import numpy
 import requests
 import json
 
-wars_tz = ZoneInfo('Europe/Warsaw')
 
+
+####################### UTILITY TERRITORY #######################
+
+context = 30 # Time added to the sides of the ECG fragment for context | GLOBAL VAR (I HEARD IT'S BAD(WORKS THO))
+
+## Timezone handling
+wars_tz = ZoneInfo('Europe/Warsaw') 
 def timeformat(dt):
     return dt.strftime('%H:%M, %d.%m.%Y')
+
+## Decorators
 
 @app.before_request
 def before_request():
@@ -41,6 +49,31 @@ def admin_prohibited(f):
         return f(*args, **kwargs) 
     return decorated_function 
 
+## Error handler
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('500.html'), 500
+
+## Test routes
+
+@app.route('/testing', methods=['GET','POST'])
+@login_required
+def testing():
+    return render_template('testing.html')
+
+@app.route('/testing2', methods=['GET','POST'])
+def testing2():
+    return render_template('testing.html')
+
+
+
+####################### USER TERRITORY #######################
 
 @app.route('/')
 @app.route('/index')
@@ -167,108 +200,6 @@ def edit_profile():
     return render_template('edit_profile.html', title='Edit Profile',
                            form=form)
 
-# [TODO][BUG] Legacy code, dispose. 
-@app.route('/testing', methods=['GET','POST'])
-@login_required
-def testing():
-    # wyświetlanie wszystkich czasów loginów 
-    user = db.first_or_404(sa.select(User).where(User.id == current_user.id))
-    times = db.session.execute(sa.select(User_Login.login_time).join(User).where(User.username == user.username)).scalars().all()
-    print(times)
-
-    # wyświetlanie listy wykresów i głosy użytkownika 
-
-    charts = db.session.execute(sa.select(Chart)).scalars().all()  
-    votes = db.session.execute(sa.select(Vote).where(Vote.interacting_user == user.id)).scalars().all()
-    
-
-    latest_votes_for_chart = {} # dict na najnowsze głosy
-
-    for vote in votes:
-        if vote.chart_id not in latest_votes_for_chart or vote.revision_number > latest_votes_for_chart[vote.chart_id].revision_number: # jeżeli jeszcze nie ma głosu albo głos w aktualnej pętli jest nowszy...
-            latest_votes_for_chart[vote.chart_id] = vote # zapisujemy głos z aktualnej pętli
-    
-    chart_to_display = []
-    for chart in charts:
-        requester_vote = latest_votes_for_chart.get(chart.id, None)
-        if requester_vote is not None:
-            requester_vote = requester_vote.user_vote
-        else:
-            requester_vote = None
-        chart_to_display.append({
-            "chart_id": chart.id,
-            "requester_vote": requester_vote
-        })
-
-    # wywoływanie numeru ostatniego wykresu : 
-    last_chart = user.last_chart
-
-    return render_template('testing.html', user=user , times=times, chart_data=chart_to_display , last_chart = last_chart )
-
-@app.route('/testing2', methods=['GET','POST'])
-def testing2():
-    return render_template('testing.html')
-
-###########!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# [TODO][BUG] GLOBAL VARS for TESTING ONLY. If you leave this in the code for longer than a week I curse you(myself) to be struck down by higher force. 
-FRAGMENTS = [
-    {"id": 1, "start": 180, "end": 240},  # 3-4 minute mark
-    {"id": 2, "start": 360, "end": 420},  # 6-7 minute mark
-]
-filepath = 'app/EKGs/TestEKG_converted.h5'
-context = 30 # czas dodany po obu stronach fragmentu w sekundach 
-
-# [TODO][BUG] Legacy code, dispose. 
-@app.route('/api/ecg/<int:fragment_id>')
-def api(fragment_id):
-    fragment = None
-    for f in FRAGMENTS:
-        if f["id"] == fragment_id:
-            fragment = f
-            break
-    if not fragment:
-        return jsonify({"error": "Fragment not found"}), 404
-
-    start_time = max(0, fragment["start"] - context) 
-    end_time = fragment["end"] + context 
-
-    with h5py.File(filepath, 'r') as f:
-        time_data = f['time'][:] 
-        strt_w_cntxt = numpy.searchsorted(time_data, start_time)
-        end_w_cntxt = numpy.searchsorted(time_data, end_time) 
-        return jsonify({
-            "ECG": {
-                "time": f['time'][strt_w_cntxt:end_w_cntxt].tolist(),
-                "ch1": f['ch1'][strt_w_cntxt:end_w_cntxt].tolist(),
-                "ch2": f['ch2'][strt_w_cntxt:end_w_cntxt].tolist(),
-                "ch3": f['ch3'][strt_w_cntxt:end_w_cntxt].tolist(),
-            }
-        })
-
-@app.route('/api/timespans/<int:chart_id>', methods=['GET'])
-def get_timespans(chart_id):
-    # Retrieve the timespans for the specified chart
-    timespans = db.session.scalars(
-        sa.select(Model_Timespans).where(Model_Timespans.chart_id == chart_id)
-    ).all()
-
-    # Return the timespans as JSON
-    return jsonify([{
-        "id": timespan.id,
-        "start": timespan.model_timespan_start,
-        "end": timespan.model_timespan_end
-    } for timespan in timespans])
-
-
-@app.errorhandler(404)
-def not_found_error(error):
-    return render_template('404.html'), 404
-
-@app.errorhandler(500)
-def internal_error(error):
-    db.session.rollback()
-    return render_template('500.html'), 500
-
 @app.route('/wykres', methods=['GET','POST'])
 @login_required
 @admin_prohibited
@@ -287,74 +218,11 @@ def wykres():
     prev_chart_id = chart_id - 1 if chart_id > 1 else None
     next_chart_id = chart_id + 1 if chart_id < total_charts else None
 
-
-    ## [TODO][BUG] Code below likely redundant with the exception of return at the end. 
-
-    chart_data = chart.chart_data 
-    # zapisywanie wyświetlanego wykresu jako ostatniego zapisanego
-    user.last_chart = chart_id
-    db.session.commit()
-    """
-    #zapis oceny
-    # [TODO] Move to separate api route
-    submitted_vote = request.args.get('vote')
-    form_chart_id = request.args.get('chart_id')
-    if submitted_vote is not None and form_chart_id == str(chart_id):
-        # sprawdzanie która to wersja głosu i przypisywanie numeru
-        latest_vote = db.session.execute(sa.select(Vote) 
-                                     .where(Vote.interacting_user == user.id, Vote.chart_id == chart_id)
-                                     .order_by(Vote.revision_number.desc())
-                                     .limit(1)).scalar() # wybieramy głosy na dany wykres, i wybieramy ostatni z listy. Jeżeli głosu nie ma, .scalar() zwraca None
-        if latest_vote: # jeżeli głos istnieje w ogóle 
-            new_revision_number = (latest_vote.revision_number + 1) # to dodaj do aktualnego +1
-        else: # jeżeli nie istnieje 
-            new_revision_number = 1 # to podejście ma numer 1
-
-        new_vote = Vote(user_vote = submitted_vote, interacting_user = user.id, chart_id = chart.id, revision_number = new_revision_number)
-        db.session.add(new_vote)
-        db.session.commit()
-    """
-
-    # Getting timespans for the curent chart 
-    timespans = db.session.execute(
-        sa.select(Model_Timespans).where(Model_Timespans.chart_id == chart_id)
-    ).scalars().all()
-    timespan_data = [
-        {"start_time": ts.model_timespan_start, "end_time": ts.model_timespan_end}
-        for ts in timespans
-    ]
-    
-    # Initial timespan from which the first chart will be drawn.
-    if timespan_data:
-        initial_timespan_raw = timespan_data[0]
-        initial_timespan = {
-            "start_time": max(0, initial_timespan_raw["start_time"] - context),
-            "end_time": initial_timespan_raw["end_time"] + context
-        }
-    else:
-        initial_timespan = None 
-
-    # Chart data for the initial timespan 
-    if timespan_data:
-        with h5py.File(filepath, 'r') as f:
-            time_data = f['time'][:] 
-            strt_w_cntxt = numpy.searchsorted(time_data, initial_timespan["start_time"])
-            end_w_cntxt = numpy.searchsorted(time_data, initial_timespan["end_time"]) 
-            initial_timespan_data = jsonify({
-                "ECG": {
-                    "time": f['time'][strt_w_cntxt:end_w_cntxt].tolist(),
-                    "ch1": f['ch1'][strt_w_cntxt:end_w_cntxt].tolist(),
-                    "ch2": f['ch2'][strt_w_cntxt:end_w_cntxt].tolist(),
-                    "ch3": f['ch3'][strt_w_cntxt:end_w_cntxt].tolist(),
-                }
-            })
-    else:
-        initial_timespan_data = None
+    return render_template("wykres.html", chart_id = chart_id, prev_chart_id=prev_chart_id, next_chart_id=next_chart_id)    
 
 
-    # [TODO] Things in the second line are redundant, but clear all of the function at once. 
-    return render_template("wykres.html", chart_data=chart_data, chart_id = chart_id, prev_chart_id=prev_chart_id, next_chart_id=next_chart_id, 
-        timespan_data = timespan_data, initial_timespan = initial_timespan , initial_timespan_data = initial_timespan_data)    
+
+####################### API TERRITORY #######################
 
 @app.route('/api/wykres')
 @login_required
@@ -575,8 +443,6 @@ def admin_vote_revisions(user_id, chart_id):
         'admin_vote_revisions.html', 
         revisions = revisions , user_id = user_id , chart_id = chart_id 
         )
-
-
 
 @app.route('/admin/charts')
 @admin_required

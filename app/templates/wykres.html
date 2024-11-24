@@ -2,7 +2,7 @@
 
 {% block content %}
     <!-- [TODO] Debugging line, remove in prod -->
-    <!--<h1>Debugging : {{ chart_id }}, {{ chart_data }},{{ initial_timespan }} {{ timespan_data }}</h1> -->
+    <!--<h1>Debugging : {{ chart_id }},{{ initial_timespan }} {{ timespan_data }}</h1> -->
     
     <!-- Wyświetlanie wykresów -->
     <script src="{{ url_for('static', filename='js/plotly.min.js') }}"></script>
@@ -33,15 +33,6 @@
             </table>
         </div>
     </div>
-
-    <!-- [TODO] Old and redundant Displaying chart and votes -->
-    <form method="GET">
-        <input type="hidden" name="chart_id" value="{{ chart_id }}">
-        <!-- [TODO] Disabled the code for voting in /wykres route, so disabled the buttons until it's relocated. 
-        <button type="submit" value="0" name="vote">Głos -</button>
-        <button type="submit" value="1" name="vote">Głos +</button>
-        -->
-    </form>
 
     <div class="pagination">
         {% if prev_chart_id %}
