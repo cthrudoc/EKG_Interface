@@ -4,25 +4,28 @@
     <!-- [TODO] Debugging line, remove in prod -->
     <!--<h1>Debugging : {{ chart_id }},{{ initial_timespan }} {{ timespan_data }}</h1> -->
     
-    <!-- Wyświetlanie wykresów -->
+    <!--
+    
     <script src="{{ url_for('static', filename='js/plotly.min.js') }}"></script>
     <div id="tester1"></div>
     <div id="tester2"></div>
     <div id="tester3"></div>
     <div id="timespan-table" style="margin-left: 20px;"></div>
     <script src="{{ url_for('static', filename='js/testing.js') }}"></script>
-
-    <!-- Displayng table  -->
-    <div id="chart-container" style="display: flex;">
-        <div id="charts" style="flex: 3;">
+    -->
+    <div id="chart-container" style="display: flex; width: 100%;">
+        <!-- Charts Section -->
+        <div id="charts" style="flex: 3; padding-right: 10px;">
             <div id="tester1"></div>
             <div id="tester2"></div>
             <div id="tester3"></div>
         </div>
-        <div id="timespan-table-container" style="flex: 1; padding-left: 10px;">
+        <!-- Sticky Table Section -->
+        <div id="timespan-table-container" style="flex: 1;">
             <table id="timespanTable" border="1" style="width: 100%;">
                 <thead>
                     <tr>
+                        <th>  </th>
                         <th>Start Time</th>
                         <th>End Time</th>
                     </tr>
@@ -33,6 +36,13 @@
             </table>
         </div>
     </div>
+    
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/plotly.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/testing.js') }}"></script>
+    
+    
+    
 
     <div class="pagination">
         {% if prev_chart_id %}

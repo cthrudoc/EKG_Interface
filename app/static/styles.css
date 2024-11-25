@@ -121,3 +121,86 @@ button:hover, .button:hover {
         font-size: 14px;
     }
 }
+/* Chart container spans the full width */
+#chart-container {
+    display: flex;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Charts section occupies 3/4 of the screen width */
+#charts {
+    flex: 3;
+    padding-right: 10px; /* Add space between charts and table */
+}
+
+/* Sticky Table Section */
+/* Sticky Table Section */
+#timespan-table-container {
+    flex: 1;
+    position: sticky; /* Ensures it remains visible during scroll */
+    top: 10px; /* Position from the top of the viewport */
+    max-height: calc(100vh - 20px); /* Prevents overflowing the viewport */
+    overflow-y: auto; /* Enables scrolling if the table is too large */
+    background-color: white; /* Ensures visibility */
+    border: 1px solid #ddd;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-left: 10px; /* Adds space between the table and the charts */
+}
+
+/* Table styles */
+#timespanTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#timespanTable thead {
+    background-color: #3498db;
+    color: white;
+}
+
+#timespanTable th,
+#timespanTable td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+#timespanTable tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+
+/* Navbar container */
+.navbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f9fa; /* Matches the light theme */
+    padding: 10px 0;
+    border-bottom: 2px solid #ddd;
+    font-family: Arial, sans-serif;
+}
+
+/* Navbar links */
+.nav-item {
+    text-decoration: none;
+    color: #333; /* Dark text */
+    font-weight: bold;
+    margin: 0 15px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Hover effect */
+.nav-item:hover {
+    background-color: #007BFF; /* Bootstrap primary blue */
+    color: white;
+}
+
+/* Active link style */
+.nav-item:active {
+    background-color: #0056b3; /* Darker blue for active */
+}

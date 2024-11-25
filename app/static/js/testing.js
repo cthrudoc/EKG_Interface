@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     x1: shapes_coordinates.x1,
                     y0: 0,
                     y1: 1,
-                    fillcolor: 'rgba(0, 255, 0, 0.2)',
+                    fillcolor: 'rgba(255,0,0, 0.2)',
                     line: { width: 0 }
                 }] , // Shapes set outside as a let so they can get updated
                 /*
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 ],
                 */
-                showlegend: true,
+                showlegend: false,
                 legend: {
                     font: { color: '#000000' },
                     bgcolor: '#FFF4F4',
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             x1: shapes_coordinates.x1,
                             y0: 0,
                             y1: 1,
-                            fillcolor: 'rgba(0, 255, 0, 0.2)',
+                            fillcolor: 'rgba(255,0,0, 0.2)',    
                             line: { width: 0 }
                 }]
             });
@@ -275,9 +275,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Update the charts with the new data
                     const ecgData = chartData.ECG;
                     const updatedData = [
-                        { x: ecgData.time, y: ecgData.ch1, name: 'Channel 1' },
-                        { x: ecgData.time, y: ecgData.ch2, name: 'Channel 2' },
-                        { x: ecgData.time, y: ecgData.ch3, name: 'Channel 3' }
+                        { x: ecgData.time, y: ecgData.ch1, name: 'Channel 1' , line: { color: '#000000', width: 1 }},
+                        { x: ecgData.time, y: ecgData.ch2, name: 'Channel 2' , line: { color: '#000000', width: 1 } },
+                        { x: ecgData.time, y: ecgData.ch3, name: 'Channel 3' , line: { color: '#000000', width: 1 } }
                     ];
 
                     allPlots.forEach((plot, idx) => {

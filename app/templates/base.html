@@ -9,15 +9,14 @@
         {% endif %}
     </head>
     <body>
-        <div>
-            <a href="{{ url_for('index') }}">Home</a>
-            <a> || </a>
+        <div class="navbar">
+            <a class="nav-item" href="{{ url_for('index') }}">Home</a>
+            <a class="nav-item" href="{{ url_for('wykres') }}">Wykres</a>
             {% if current_user.is_anonymous %}
-            <a href="{{ url_for('login') }}">Login</a>
+            <a class="nav-item" href="{{ url_for('login') }}">Login</a>
             {% else %}
-            <a href="{{ url_for('wykres') }}">Wykres</a>
-            <a href="{{ url_for('user', username=current_user.username) }}">Profile</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
+            <a class="nav-item" href="{{ url_for('user', username=current_user.username) }}">Profile</a>
+            <a class="nav-item" href="{{ url_for('logout') }}">Logout</a>
             {% endif %}
         </div>
         <hr>
