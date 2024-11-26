@@ -1,18 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <!-- [TODO] Debugging line, remove in prod -->
-    <!--<h1>Debugging : {{ chart_id }},{{ initial_timespan }} {{ timespan_data }}</h1> -->
-    
-    <!--
-    
-    <script src="{{ url_for('static', filename='js/plotly.min.js') }}"></script>
-    <div id="tester1"></div>
-    <div id="tester2"></div>
-    <div id="tester3"></div>
-    <div id="timespan-table" style="margin-left: 20px;"></div>
-    <script src="{{ url_for('static', filename='js/testing.js') }}"></script>
-    -->
+
     <div id="chart-container" style="display: flex; width: 100%;">
         <!-- Charts Section -->
         <div id="charts" style="flex: 3; padding-right: 10px;">
@@ -22,18 +11,21 @@
         </div>
         <!-- Sticky Table Section -->
         <div id="timespan-table-container" style="flex: 1;">
-            <table id="timespanTable" border="1" style="width: 100%;">
-                <thead>
-                    <tr>
-                        <th>  </th>
-                        <th>Start Time</th>
-                        <th>End Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Timespans will be dynamically loaded here -->
-                </tbody>
-            </table>
+            <button id="toggleTableBtn" class="toggle-button">Hide Table</button>
+            <div id="collapsibleTable" class="collapsible">
+                <table id="timespanTable" class="table" border="1" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>  </th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Timespans will be dynamically loaded here -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     

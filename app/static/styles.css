@@ -204,3 +204,31 @@ button:hover, .button:hover {
 .nav-item:active {
     background-color: #0056b3; /* Darker blue for active */
 }
+
+/* Style for the toggle button */
+.toggle-button {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.toggle-button:hover {
+    background-color: #0056b3;
+}
+
+/* Collapsible container */
+.collapsible {
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+    overflow: hidden;
+    max-height: 500px; /* Expanded height */
+    opacity: 1;
+}
+
+.collapsible.collapsed {
+    max-height: 0;
+    opacity: 0;
+}

@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 timespanTable.appendChild(row);
             });
 
-            // [NEW] Add event listeners to load buttons
+            // Add event listeners to load buttons
             document.querySelectorAll('.load-timespan').forEach(button => {
                 button.addEventListener('click', function() {
                     const start = parseFloat(this.dataset.start);
@@ -290,8 +290,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 });
 
-                console.log("Timespan table populated and event listeners added");
+                console.log("[wykres.js][table] Timespan table populated and event listeners added");
+            
+            // Event listener for collapsing the table 
+            const toggleTableBtn = document.getElementById('toggleTableBtn');
+            const collapsibleTable = document.getElementById('collapsibleTable');
 
+            if (toggleTableBtn && collapsibleTable) {
+                toggleTableBtn.addEventListener('click', function () {
+                    collapsibleTable.classList.toggle('collapsed');
+                    if (collapsibleTable.classList.contains('collapsed')) {
+                        toggleTableBtn.textContent = 'Show Table';
+                        console.log("[wykres.js][collapsing] Toggled 'Show Table'");
+                    } else {
+                        toggleTableBtn.textContent = 'Hide Table';
+                        console.log("[wykres.js][collapsing] Toggled 'Hide Table'");
+                    }
+                });
+            } else {
+                console.error("[wykres.js] Failed to find toggle button or collapsible table.");
+            };
 
             // Debounce function to limit the frequency of updates
             function debounce(func, wait) {
