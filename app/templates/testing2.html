@@ -78,18 +78,23 @@
         /* Row container for table rows */
         .row-container {
             display: table-row-group;
+            transition: all 0.5s ease-in-out;
         }
 
         .row-container.collapsed {
             display: none; /* Completely hide rows */
         }
 
-        /* Hidden row content styling */
-        .unfolded-content {
+         /* Hidden row content styling */
+         .unfolded-content {
             display: none;
             padding: 10px;
             background-color: #f9f9f9;
             text-align: center;
+        }
+
+        .unfolded-content.active {
+            display: block;
         }
 
         .unfolded-buttons {
@@ -126,103 +131,19 @@
     <div id="rightStrip" class="right-strip">
         <div class="table-container">
             <!-- First Table -->
-            <table>
+            <table id="timespanTable">
                 <thead>
                     <tr>
-                        <th>Column 1</th>
-                        <th>Column 2</th>
-                        <th>Column 3</th>
+                        <th>Index</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
                         <th>
                             <button class="row-toggle">▼</button>
                         </th>
                     </tr>
                 </thead>
-                <tbody class="row-container">
-                    <tr>
-                        <td><button class="row-unfold">Col1</button></td>
-                        <td>Row1 Col2</td>
-                        <td>Row1 Col3</td>
-                        <td>Row1 Col4</td>
-                    </tr>
-                    <!-- Unfolded content row with colspan for spanning all columns -->
-                    <tr class="unfolded-content">
-                        <td colspan="4">
-                            <div class="unfolded-buttons">
-                                <button>Button 1</button>
-                                <button>Button 2</button>
-                                <button>Button 3</button>
-                            </div>
-                            <input type="text" class="unfolded-text" placeholder="Enter text here">
-                            <h4> TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING </h4>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><button class="row-unfold">Col2</button></td>
-                        <td>Row2 Col2</td>
-                        <td>Row2 Col3</td>
-                        <td>Row2 Col4</td>
-                    </tr>
-                    <tr class="unfolded-content">
-                        <td colspan="4">
-                            <div class="unfolded-buttons">
-                                <button>Button 1</button>
-                                <button>Button 2</button>
-                                <button>Button 3</button>
-                            </div>
-                            <input type="text" class="unfolded-text" placeholder="Enter text here">
-                            <h4> TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING </h4>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- Second Table -->
-            <table>
-                <thead>
-                    <tr>
-                        <th>Column 1</th>
-                        <th>Column 2</th>
-                        <th>Column 3</th>
-                        <th>
-                            <button class="row-toggle">▼</button>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="row-container">
-                    <tr>
-                        <td><button class="row-unfold">Col1</button></td>
-                        <td>Row1 Col2</td>
-                        <td>Row1 Col3</td>
-                        <td>Row1 Col4</td>
-                    </tr>
-                    <tr class="unfolded-content">
-                        <td colspan="4">
-                            <div class="unfolded-buttons">
-                                <button>Button 1</button>
-                                <button>Button 2</button>
-                                <button>Button 3</button>
-                            </div>
-                            <input type="text" class="unfolded-text" placeholder="Enter text here">
-                            <h4> TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING </h4>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><button class="row-unfold">Col1</button></td>
-                        <td>Row2 Col2</td>
-                        <td>Row2 Col3</td>
-                        <td>Row2 Col4</td>
-                    </tr>
-                    <tr class="unfolded-content">
-                        <td colspan="4">
-                            <div class="unfolded-buttons">
-                                <button>Button 1</button>
-                                <button>Button 2</button>
-                                <button>Button 3</button>
-                            </div>
-                            <input type="text" class="unfolded-text" placeholder="Enter text here">
-                            <h4> TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING </h4>
-                        </td>
-                    </tr>
+                <tbody id="timespanTableBody" class="row-container">
+                    <!-- Rows will be added dynamically here -->
                 </tbody>
             </table>
         </div>
@@ -232,11 +153,54 @@
         // JavaScript for strip collapsing
         const toggleButton = document.getElementById('toggleButton');
         const rightStrip = document.getElementById('rightStrip');
-
         toggleButton.addEventListener('click', () => {
             const isCollapsed = rightStrip.classList.toggle('collapsed');
-            console.log("Strip collapsed state:", isCollapsed);
             toggleButton.textContent = isCollapsed ? 'Expand' : 'Collapse';
+        });
+
+        // JavaScript for dynamic table population with timespan data
+        const timespans = [
+            { start_time: 1.23, end_time: 2.34 },
+            { start_time: 2.45, end_time: 3.56 },
+            { start_time: 3.67, end_time: 4.78 }
+            // Add more timespan objects here
+        ];
+
+        const timespanTableBody = document.getElementById('timespanTableBody');
+
+        timespans.forEach((timespan, index) => {
+            // Create the regular row
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><button class="row-unfold">+</button></td>
+                <td>${(index + 1)}</td>
+                <td>${timespan.start_time.toFixed(2)}</td>
+                <td>${timespan.end_time.toFixed(2)}</td>
+            `;
+            timespanTableBody.appendChild(row);
+
+            // Create the unfolded content row (hidden by default)
+            const unfoldedRow = document.createElement('tr');
+            unfoldedRow.classList.add('unfolded-content');
+            unfoldedRow.innerHTML = `
+                <td colspan="4">
+                    <div class="unfolded-buttons">
+                        <button>Button 1</button>
+                        <button>Button 2</button>
+                        <button>Button 3</button>
+                    </div>
+                    <input type="text" class="unfolded-text" placeholder="Enter text here">
+                </td>
+            `;
+            timespanTableBody.appendChild(unfoldedRow);
+
+            // Handle row unfold action (toggle + to - and show/hide content)
+            const unfoldButton = row.querySelector('.row-unfold');
+            unfoldButton.addEventListener('click', () => {
+                const unfoldedContent = unfoldedRow;
+                unfoldedContent.classList.toggle('active');
+                unfoldButton.textContent = unfoldedContent.classList.contains('active') ? '-' : '+';
+            });
         });
 
         // JavaScript for table row collapsing
@@ -287,7 +251,6 @@
             });
         });
 
-        
     </script>
 </body>
 </html>

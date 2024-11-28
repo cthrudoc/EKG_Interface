@@ -69,7 +69,7 @@ def testing():
 
 @app.route('/testing2', methods=['GET','POST'])
 def testing2():
-    return render_template('testing.html')
+    return render_template('testing2.html')
 
 
 
