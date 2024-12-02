@@ -6,7 +6,7 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #f0f4f8;
+    background-color: #f0f4f8; /* Retained from File 1 */
 }
 
 /* Navigation */
@@ -29,19 +29,21 @@ nav a:hover {
 
 /* Tables */
 table {
-    width: 100%;
+    width: 90%; /* Set to File 2's width for a better layout */
     border-collapse: collapse;
+    margin: 0 auto; /* Align tables to center */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Added from File 2 */
     margin-bottom: 20px;
 }
 
 th, td {
     padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+    text-align: center; /* Central alignment from File 2 */
+    border: 1px solid #ddd; /* Unified border style */
 }
 
 thead {
-    background-color: #3498db;
+    background-color: #3498db; /* Color unified with File 1 */
     color: white;
 }
 
@@ -70,23 +72,28 @@ button:hover, .button:hover {
 
 /* Pagination */
 .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 20px;
+    text-align: center; 
+    margin-top: 10px;
+    padding: 10px; 
+    border-top: 1px solid #ddd; 
+    background-color: #f9f9f9; 
 }
 
-.pagination a, .pagination span {
-    padding: 8px 16px;
+/* Styling for pagination buttons */
+.pagination .button {
+    padding: 8px 12px;
+    margin: 0 5px;
     text-decoration: none;
-    color: #3498db;
-    border: 1px solid #3498db;
-    margin: 0 4px;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
 }
 
-.pagination a:hover {
-    background-color: #3498db;
-    color: white;
+.pagination .button.disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 
 /* User profile */
@@ -104,6 +111,10 @@ button:hover, .button:hover {
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     margin-bottom: 20px;
+    display: flex;
+    width: 100%; /* Take full width of the window */
+    height: 100vh; /* Full height of the viewport */
+    overflow: hidden; /* Prevent overflow issues */
 }
 
 /* Responsive design */
@@ -121,35 +132,37 @@ button:hover, .button:hover {
         font-size: 14px;
     }
 }
+
 /* Chart container spans the full width */
 #chart-container {
     display: flex;
     width: 100%;
     margin: 0 auto;
+    height: 100vh; /* Full viewport height */
 }
 
-/* Charts section occupies 3/4 of the screen width */
+/* Charts section dynamically adjusts to account for the strip */
 #charts {
-    flex: 3;
-    padding-right: 10px; /* Add space between charts and table */
+    flex: 1;
+    overflow: hidden;
+    transition: margin-right 0.5s ease-in-out, width 0.5s ease-in-out; /* Smooth resizing */
+    margin-right: 300px; /* Reserve space for the right strip */
 }
 
-/* Sticky Table Section */
 /* Sticky Table Section */
 #timespan-table-container {
     flex: 1;
-    position: sticky; /* Ensures it remains visible during scroll */
-    top: 10px; /* Position from the top of the viewport */
-    max-height: calc(100vh - 20px); /* Prevents overflowing the viewport */
-    overflow-y: auto; /* Enables scrolling if the table is too large */
-    background-color: white; /* Ensures visibility */
+    position: sticky;
+    top: 10px;
+    max-height: calc(100vh - 20px);
+    overflow-y: auto;
+    background-color: white;
     border: 1px solid #ddd;
     padding: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin-left: 10px; /* Adds space between the table and the charts */
+    margin-left: 10px;
 }
 
-/* Table styles */
 #timespanTable {
     width: 100%;
     border-collapse: collapse;
@@ -160,8 +173,7 @@ button:hover, .button:hover {
     color: white;
 }
 
-#timespanTable th,
-#timespanTable td {
+#timespanTable th, #timespanTable td {
     padding: 12px;
     border-bottom: 1px solid #ddd;
     text-align: left;
@@ -171,49 +183,41 @@ button:hover, .button:hover {
     background-color: #f2f2f2;
 }
 
-
-/* Navbar container */
-.navbar {
+/* Right strip */
+.right-strip {
+    position: fixed; /* Keep the strip floating over the charts */
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 300px; /* Fixed width for the strip */
+    background-color: #f4f4f4; /* Optional: Light background for contrast */
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); /* Visual separation */
     display: flex;
+    flex-direction: column;
+    transition: transform 0.5s ease-in-out;
+    transform: translateX(0); /* Default position */
+    z-index: 1000; /* Ensure it appears above other elements */
     justify-content: center;
     align-items: center;
-    background-color: #f8f9fa; /* Matches the light theme */
-    padding: 10px 0;
-    border-bottom: 2px solid #ddd;
-    font-family: Arial, sans-serif;
 }
 
-/* Navbar links */
-.nav-item {
-    text-decoration: none;
-    color: #333; /* Dark text */
-    font-weight: bold;
-    margin: 0 15px;
-    padding: 5px 10px;
-    border-radius: 5px;
-    transition: background-color 0.3s, color 0.3s;
+.right-strip.collapsed {
+    transform: translateX(100%);
 }
 
-/* Hover effect */
-.nav-item:hover {
-    background-color: #007BFF; /* Bootstrap primary blue */
-    color: white;
-}
-
-/* Active link style */
-.nav-item:active {
-    background-color: #0056b3; /* Darker blue for active */
-}
-
-/* Style for the toggle button */
+/* Toggle button */
 .toggle-button {
-    background-color: #007bff;
-    color: #ffffff;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background-color: #007BFF;
+    color: white;
     border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    margin-bottom: 10px;
+    padding: 10px 15px;
     border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1100;
 }
 
 .toggle-button:hover {
@@ -224,11 +228,54 @@ button:hover, .button:hover {
 .collapsible {
     transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
     overflow: hidden;
-    max-height: 500px; /* Expanded height */
+    max-height: 500px;
     opacity: 1;
 }
 
 .collapsible.collapsed {
     max-height: 0;
     opacity: 0;
+}
+
+/* Row container for table rows */
+.row-container {
+    display: table-row-group;
+    transition: all 0.5s ease-in-out;
+}
+
+.row-container.collapsed {
+    display: none;
+}
+
+/* Hidden row content */
+.unfolded-content {
+    display: none;
+    padding: 10px;
+    background-color: #f9f9f9;
+    text-align: center;
+}
+
+.unfolded-content.active {
+    display: block;
+}
+
+.unfolded-buttons button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: none;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.unfolded-buttons button:hover {
+    background-color: #0056b3;
+}
+
+.unfolded-text {
+    width: 90%;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }

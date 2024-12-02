@@ -11,12 +11,17 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('[wykres.js] Received data:', data);  // [DEBUG] 
             const ecgData = data.initial_chart_data.ECG;
             const timespans = data.timespans || [];
+            const initialTimespan = data.initial_timespan?.[0] || {};
             console.log('[wykres.js] Timespans:', timespans); // [DEBUG]
             let chartId = data.chart_id
 
             // Calculate the data bounds
             const xMin = Math.min(...ecgData.time);
             const xMax = Math.max(...ecgData.time);
+
+            // [TODO] Creating initial timespan
+            let initialTimespanStart = initialTimespan.start_time;
+            let initalTimespanEnd = initialTimespan.end_time;
             
             // Modified trace styling to look like ECG printer output
             const traces = [
@@ -89,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 xaxis: {
                     title: 'Time (seconds)',
-                    range: [xMin, xMax],
+                    range: [initialTimespanStart, initalTimespanEnd],
                     constrain: 'domain',
                     nticks: 10,  // Maximum of 10 tick labels on the x-axis
                     tickmode: 'auto',  // Let Plotly adjust tick placement
@@ -208,109 +213,167 @@ document.addEventListener('DOMContentLoaded', function() {
 
             console.log("Charts created successfully");
 
-
-            // Populate the table with timespan data
-            timespans.forEach((timespan, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${timespan.start_time.toFixed(2)}</td>
-                    <td>${timespan.end_time.toFixed(2)}</td>
-                    <td>
-                        <button class="load-timespan" data-start="${timespan.start_time}" data-end="${timespan.end_time}">
-                            Load
-                        </button>
-                    </td>
-                `;
-                timespanTable.appendChild(row);
+            // TABLE TERRITORY STARTS HERE
+            // JavaScript for strip collapsing
+            const toggleButton = document.getElementById('toggleButton');
+            const rightStrip = document.getElementById('rightStrip');
+            toggleButton.addEventListener('click', () => {
+                const isCollapsed = rightStrip.classList.toggle('collapsed');
+                toggleButton.textContent = isCollapsed ? 'Expand' : 'Collapse';
+                charts.style.marginRight = isCollapsed ? '0' : '300px'; // Adjust margin of charts dynamically
+                setTimeout(() => {
+                    allPlots.forEach(plot => {
+                        Plotly.relayout(plot, { autosize: true });
+                    });
+                }, 500);
             });
 
-            // Add event listeners to load buttons
-            document.querySelectorAll('.load-timespan').forEach(button => {
-                button.addEventListener('click', function() {
-                    const start = parseFloat(this.dataset.start);
-                    const end = parseFloat(this.dataset.end);
-                    const extendedStart = Math.max(xMin, start - 0);
-                    const extendedEnd = Math.min(xMax, end + 0);
+            const timespanTableBody = document.getElementById('timespanTableBody');
+
+            // Populate table with timespans
+            timespans.forEach((timespan, index) => {
+                // Create the regular row
+                const row = document.createElement('tr');
+                row.setAttribute('data-start', timespan.start_time); // Set data attributes for loading logic
+                row.setAttribute('data-end', timespan.end_time);
+
+                row.innerHTML = `
+                    <td>${(index + 1)}</td>
+                    <td>${timespan.start_time.toFixed(2)}</td>
+                    <td>${timespan.end_time.toFixed(2)}</td>
+                    <td><button class="row-unfold">+</button></td>
+                `;
+                timespanTableBody.appendChild(row);
+
+                // Create the unfolded content row (hidden by default)
+                const unfoldedRow = document.createElement('tr');
+                unfoldedRow.classList.add('unfolded-content');
+                unfoldedRow.style.display = 'none'; // Hidden by default
+                unfoldedRow.style.display = index === 0 ? 'table-row' : 'none'; // Unfold the first row by default
+                unfoldedRow.innerHTML = `
+                    <td colspan="4">
+                        <div class="unfolded-buttons">
+                            <button>Button 1</button>
+                            <button>Button 2</button>
+                            <button>Button 3</button>
+                        </div>
+                        <input type="text" class="unfolded-text" placeholder="Enter text here">
+                    </td>
+                `;
+                timespanTableBody.appendChild(unfoldedRow);
+
+                // Handle row unfold action (toggle + to - and show/hide content)
+                const unfoldButton = row.querySelector('.row-unfold');
+                if (index === 0) { // Disable the button for the first row by default
+                    unfoldButton.textContent = ' ';
+                    unfoldButton.disabled = true;}
+                unfoldButton.addEventListener('click', () => {
+                    const isUnfolded = unfoldedRow.style.display === 'table-row';
+                    unfoldedRow.style.display = isUnfolded ? 'none' : 'table-row';
+                    unfoldButton.textContent = isUnfolded ? '+' : ' ';
+
+                    // Close other unfolded rows
+                    document.querySelectorAll('.unfolded-content').forEach(otherRow => {
+                        if (otherRow !== unfoldedRow) {
+                            otherRow.style.display = 'none';
+                            const siblingButton = otherRow.previousElementSibling.querySelector('.row-unfold');
+                            if (siblingButton) {
+                                siblingButton.textContent = '+'; 
+                                siblingButton.disabled = false; // Enable the button for other rows
+                            }
+                        }
+                    unfoldButton.disabled = !isUnfolded; // Disable the button for currently unfolded row
+                    });
+                });
+            });
+
+            // JavaScript for table collapsing
+            const rowToggleButtons = document.querySelectorAll('.row-toggle');
+
+            rowToggleButtons.forEach((button, index) => {
+                button.addEventListener('click', () => {
+                    console.log(`Toggle button clicked for table ${index + 1}`);
+                    const rowContainer = button.closest('table').querySelector('.row-container');
+                    if (rowContainer) {
+                        const isCollapsed = rowContainer.classList.toggle('collapsed');
+                        console.log(`Row container collapsed state for table ${index + 1}:`, isCollapsed);
+                        button.textContent = isCollapsed ? '+' : '-';
+                    } else {
+                        console.error(`No row-container found for table ${index + 1}`);
+                    }
+                });
+            });
+
+            // Add event listeners to load buttons for timespans
+            document.querySelectorAll('.row-unfold').forEach(button => {
+                button.addEventListener('click', function () {
+                    const currentRow = this.closest('tr');
+                    const start = parseFloat(currentRow.dataset.start);
+                    const end = parseFloat(currentRow.dataset.end);
+
+                    if (isNaN(start) || isNaN(end)) {
+                        console.error("[wykres.js] Start or end timespan data is invalid:", { start, end });
+                        return;
+                    }
+
+                    const extendedStart = Math.max(xMin, start - 30); // Add buffer
+                    const extendedEnd = Math.min(xMax, end + 30); // Add buffer
 
                     console.log(`[wykres.js] Loading timespan: ${extendedStart} to ${extendedEnd}`);
-                    
+
+                    // Update plots
                     allPlots.forEach(plot => {
                         Plotly.relayout(plot, {
-                            'xaxis.range': [extendedStart, extendedEnd]
+                            'xaxis.range': [extendedStart, extendedEnd],
+                            'xaxis.rangeslider.range': [extendedStart, extendedEnd]
                         });
                     });
 
-                // Update shapes_coordinates
-                shapes_coordinates = { x0: start, x1: end };
-                console.log('[wykres.js] Updated shapes_coordinates:', shapes_coordinates);
+                    // Update shapes
+                    shapes_coordinates = { x0: start, x1: end };
+                    console.log('[wykres.js] Updated shapes_coordinates:', shapes_coordinates);
 
-                // Apply the new shape
-                allPlots.forEach(plot => {
-                    Plotly.relayout(plot, {
-                        shapes: [{
-                            type: 'rect',
-                            xref: 'x',
-                            yref: 'paper',
-                            x0: shapes_coordinates.x0,
-                            x1: shapes_coordinates.x1,
-                            y0: 0,
-                            y1: 1,
-                            fillcolor: 'rgba(255,0,0, 0.2)',    
-                            line: { width: 0 }
-                }]
+                    allPlots.forEach(plot => {
+                        Plotly.relayout(plot, {
+                            shapes: [{
+                                type: 'rect',
+                                xref: 'x',
+                                yref: 'paper',
+                                x0: shapes_coordinates.x0,
+                                x1: shapes_coordinates.x1,
+                                y0: 0,
+                                y1: 1,
+                                fillcolor: 'rgba(255,0,0, 0.2)',
+                                line: { width: 0 }
+                            }]
+                        });
+                    });
+
+                    fetch(`/api/chart_data?chart_id=${chartId}&start_time=${start}&end_time=${end}`)
+                        .then(response => {
+                            if (!response.ok) throw new Error(`Error fetching chart data: ${response.statusText}`);
+                            return response.json();
+                        })
+                        .then(chartData => {
+                            const ecgData = chartData.ECG;
+                            const updatedData = [
+                                { x: ecgData.time, y: ecgData.ch1, name: 'Channel 1', line: { color: '#000000', width: 1 } },
+                                { x: ecgData.time, y: ecgData.ch2, name: 'Channel 2', line: { color: '#000000', width: 1 } },
+                                { x: ecgData.time, y: ecgData.ch3, name: 'Channel 3', line: { color: '#000000', width: 1 } }
+                            ];
+
+                            allPlots.forEach((plot, idx) => {
+                                Plotly.react(plot, [updatedData[idx]], layout);
+                            });
+                        })
+                        .catch(error => console.error('[wykres.js] Error fetching or updating chart data:', error));
+                });
             });
 
-            // Fetch new chart data from the API
-            fetch(`/api/chart_data?chart_id=${chartId}&start_time=${start}&end_time=${end}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Error fetching chart data: ${response.statusText}`);
-                    }
-                    return response.json();
-                })
-                .then(chartData => {
-                    console.log('[wykres.js] New chart data received:', chartData);
+            console.log("[wykres.js][table] Timespan table populated and event listeners added");
+        
 
-                    // Update the charts with the new data
-                    const ecgData = chartData.ECG;
-                    const updatedData = [
-                        { x: ecgData.time, y: ecgData.ch1, name: 'Channel 1' , line: { color: '#000000', width: 1 }},
-                        { x: ecgData.time, y: ecgData.ch2, name: 'Channel 2' , line: { color: '#000000', width: 1 } },
-                        { x: ecgData.time, y: ecgData.ch3, name: 'Channel 3' , line: { color: '#000000', width: 1 } }
-                    ];
-
-                    allPlots.forEach((plot, idx) => {
-                        Plotly.react(plot, [updatedData[idx]], layout);
-                    });
-                })
-                .catch(error => console.error('[wykres.js] Error fetching or updating chart data:', error));
-
-                });     
-                });
-                });
-
-                console.log("[wykres.js][table] Timespan table populated and event listeners added");
-            
-            // Event listener for collapsing the table 
-            const toggleTableBtn = document.getElementById('toggleTableBtn');
-            const collapsibleTable = document.getElementById('collapsibleTable');
-
-            if (toggleTableBtn && collapsibleTable) {
-                toggleTableBtn.addEventListener('click', function () {
-                    collapsibleTable.classList.toggle('collapsed');
-                    if (collapsibleTable.classList.contains('collapsed')) {
-                        toggleTableBtn.textContent = 'Show Table';
-                        console.log("[wykres.js][collapsing] Toggled 'Show Table'");
-                    } else {
-                        toggleTableBtn.textContent = 'Hide Table';
-                        console.log("[wykres.js][collapsing] Toggled 'Hide Table'");
-                    }
-                });
-            } else {
-                console.error("[wykres.js] Failed to find toggle button or collapsible table.");
-            };
-
+            // SYNCHRONISATION TERRITORY STARTS HERE
             // Debounce function to limit the frequency of updates
             function debounce(func, wait) {
                 let timeout;
