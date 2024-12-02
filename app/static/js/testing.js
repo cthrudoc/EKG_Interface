@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function() {
             Plotly.newPlot(tester2, [traces[1]], layout, config);
             Plotly.newPlot(tester3, [traces[2]], layout, config);
 
-            console.log("Charts created successfully");
+            console.log("[wykres.js] Charts created successfully.");
 
             // TABLE TERRITORY STARTS HERE
             // JavaScript for strip collapsing
@@ -292,14 +292,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
             rowToggleButtons.forEach((button, index) => {
                 button.addEventListener('click', () => {
-                    console.log(`Toggle button clicked for table ${index + 1}`);
+                    console.log(`[wykres.js][rowToggleButtons] Toggle button clicked for table ${index + 1}`);
                     const rowContainer = button.closest('table').querySelector('.row-container');
                     if (rowContainer) {
                         const isCollapsed = rowContainer.classList.toggle('collapsed');
-                        console.log(`Row container collapsed state for table ${index + 1}:`, isCollapsed);
+                        console.log(`[wykres.js][rowToggleButtons] Row container collapsed state for table ${index + 1}:`, isCollapsed);
                         button.textContent = isCollapsed ? '+' : '-';
                     } else {
-                        console.error(`No row-container found for table ${index + 1}`);
+                        console.error(`[wykres.js][rowToggleButtons] No row-container found for table ${index + 1}`);
                     }
                 });
             });
@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const extendedStart = Math.max(xMin, start - 30); // Add buffer
                     const extendedEnd = Math.min(xMax, end + 30); // Add buffer
 
-                    console.log(`[wykres.js] Loading timespan: ${extendedStart} to ${extendedEnd}`);
+                    console.log(`[wykres.js][.row-unfold] Loading timespan: ${extendedStart} to ${extendedEnd}`);
 
                     // Update plots
                     allPlots.forEach(plot => {
@@ -370,7 +370,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
 
-            console.log("[wykres.js][table] Timespan table populated and event listeners added");
+            console.log("[wykres.js][table] Timespan table populated and event listeners for load buttons added");
         
 
             // SYNCHRONISATION TERRITORY STARTS HERE
@@ -410,7 +410,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (isUpdating || isSliderUpdating) return;
                 isUpdating = true;
 
-                console.log("Sync function called", eventdata);
+                console.log("[wykres.js][syncPlots] Sync function called.", eventdata);
 
                 const updatedLayout = {};
 
@@ -419,20 +419,20 @@ document.addEventListener('DOMContentLoaded', function() {
                         Math.max(xMin, eventdata['xaxis.range[0]']),
                         Math.min(xMax, eventdata['xaxis.range[1]'])
                     ];
-                    console.log(`Syncing xaxis.range: ${updatedLayout['xaxis.range']}`);
+                    console.log(`[wykres.js][syncPlots] Syncing xaxis.range: ${updatedLayout['xaxis.range']}`);
                 } else if (Array.isArray(eventdata['xaxis.range'])) { 
                     updatedLayout['xaxis.range'] = [
                         Math.max(xMin, eventdata['xaxis.range'][0]),
                         Math.min(xMax, eventdata['xaxis.range'][1])
                     ];
-                    console.log(`Syncing xaxis.range (slider): ${updatedLayout['xaxis.range']}`);
+                    console.log(`[wykres.js][syncPlots] Syncing xaxis.range (slider): ${updatedLayout['xaxis.range']}`);
                 } else if ('xaxis.autorange' in eventdata) {
                     updatedLayout['xaxis.autorange'] = eventdata['xaxis.autorange'];
-                    console.log(`Syncing xaxis.autorange: ${updatedLayout['xaxis.autorange']}`);
+                    console.log(`[wykres.js][syncPlots] Syncing xaxis.autorange: ${updatedLayout['xaxis.autorange']}`);
                 }
 
                 if (Object.keys(updatedLayout).length === 0) {
-                    console.log("No recognizable range data in event", eventdata);
+                    console.log("[wykres.js][syncPlots] No recognizable range data in event", eventdata);
                     isUpdating = false;
                     return;
                 }
@@ -440,7 +440,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const updatePromises = allPlots
                     .filter(plot => plot !== triggerPlot)
                     .map(plot => {
-                        console.log("Updating plot", plot.id, "with layout", updatedLayout);
+                        console.log("[wykres.js][syncPlots] Updating plot", plot.id, "with layout", updatedLayout);
                         return Plotly.relayout(plot, updatedLayout);
                     });
 
@@ -457,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add event listeners to each plot
             allPlots.forEach(plot => {
                 plot.on('plotly_relayout', function(eventdata) {
-                    console.log("Relayout event on", plot.id, eventdata);
+                    console.log("[wykres.js][syncPlots] Relayout event on", plot.id, eventdata);
                     if (!('autosize' in eventdata) && !isUpdating && !isSliderUpdating) {
                         if (!enforceDataBounds(eventdata, plot)) {
                             syncPlots(eventdata, plot);
@@ -466,9 +466,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
 
-            console.log("Event listeners added");
+            console.log('[wykres.js][syncPlots] Event listeners for synchronisation added.');
         })
         .catch(error => {
-            console.error('Error fetching or parsing data:', error);
+            console.error('[wykres.js] Error fetching or parsing data:', error);
         });
 });
