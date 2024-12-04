@@ -115,6 +115,7 @@ button:hover, .button:hover {
     width: 100%; /* Take full width of the window */
     height: 100vh; /* Full height of the viewport */
     overflow: hidden; /* Prevent overflow issues */
+    position: relative;
 }
 
 /* Responsive design */
@@ -136,9 +137,10 @@ button:hover, .button:hover {
 /* Chart container spans the full width */
 #chart-container {
     display: flex;
+    position: relative;
     width: 100%;
-    margin: 0 auto;
     height: 100vh; /* Full viewport height */
+    overflow: hidden;
 }
 
 /* Charts section dynamically adjusts to account for the strip */
@@ -185,7 +187,7 @@ button:hover, .button:hover {
 
 /* Right strip */
 .right-strip {
-    position: fixed; /* Keep the strip floating over the charts */
+    position: absolute; /* Aligns relative to the chart-container */
     top: 0;
     right: 0;
     height: 100%;
@@ -194,11 +196,11 @@ button:hover, .button:hover {
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); /* Visual separation */
     display: flex;
     flex-direction: column;
-    transition: transform 0.5s ease-in-out;
-    transform: translateX(0); /* Default position */
-    z-index: 1000; /* Ensure it appears above other elements */
     justify-content: center;
     align-items: center;
+    z-index: 1000; /* Ensure it appears above other elements */
+    transition: transform 0.5s ease-in-out; /* Smooth sliding animation */
+    transform: translateX(0); /* Default position */
 }
 
 .right-strip.collapsed {
@@ -207,7 +209,7 @@ button:hover, .button:hover {
 
 /* Toggle button */
 .toggle-button {
-    position: fixed;
+    position: absolute;
     top: 10px;
     right: 10px;
     background-color: #007BFF;
