@@ -139,7 +139,7 @@ button:hover, .button:hover {
     display: flex;
     position: relative;
     width: 100%;
-    height: 100vh; /* Full viewport height */
+    height: auto;
     overflow: hidden;
 }
 
@@ -154,7 +154,7 @@ button:hover, .button:hover {
 /* Sticky Table Section */
 #timespan-table-container {
     flex: 1;
-    position: sticky;
+    position: relative;
     top: 10px;
     max-height: calc(100vh - 20px);
     overflow-y: auto;
