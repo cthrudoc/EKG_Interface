@@ -114,7 +114,7 @@ button:hover, .button:hover {
     display: flex;
     width: 100%; /* Take full width of the window */
     height: 100vh; /* Full height of the viewport */
-    overflow: hidden; /* Prevent overflow issues */
+    overflow: visible; /* Prevent overflow issues */
     position: relative;
 }
 
@@ -154,9 +154,9 @@ button:hover, .button:hover {
 /* Sticky Table Section */
 #timespan-table-container {
     flex: 1;
-    position: relative;
-    top: 10px;
-    max-height: calc(100vh - 20px);
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
     overflow-y: auto;
     background-color: white;
     border: 1px solid #ddd;
@@ -166,7 +166,6 @@ button:hover, .button:hover {
 }
 
 #timespanTable {
-    width: 100%;
     border-collapse: collapse;
 }
 
@@ -187,7 +186,7 @@ button:hover, .button:hover {
 
 /* Right strip */
 .right-strip {
-    position: absolute; /* Aligns relative to the chart-container */
+    position: fixed; /* Aligns relative to the chart-container */
     top: 0;
     right: 0;
     height: 100%;
@@ -209,7 +208,7 @@ button:hover, .button:hover {
 
 /* Toggle button */
 .toggle-button {
-    position: absolute;
+    position: fixed;
     top: 10px;
     right: 10px;
     background-color: #007BFF;
