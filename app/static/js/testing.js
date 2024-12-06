@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>${(index + 1)}</td>
                     <td>${timespan.start_time.toFixed(2)}</td>
                     <td>${timespan.end_time.toFixed(2)}</td>
-                    <td><button class="row-unfold">+</button></td>
+                    <td><button class="row-unfold dark-button">+</button></td>
                 `;
                 timespanTableBody.appendChild(row);
 
