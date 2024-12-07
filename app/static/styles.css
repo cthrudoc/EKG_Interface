@@ -187,20 +187,20 @@ button:hover, .button:hover {
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     margin-bottom: 20px;
-    display: flex;
     width: 100%; /* Take full width of the window */
     height: 100vh; /* Full height of the viewport */
-    overflow: visible; /* Prevent overflow issues */
-    position: relative;
-}
-
-/* Chart container spans the full width */
-#chart-container {
     display: flex;
     position: relative;
     width: 100%;
     height: auto;
-    overflow: hidden;
+    overflow: visible;
+}
+
+/* [TODO] Shit gets fucked without it, idk why???????*/
+#chart-container {
+    width: 100%;
+    height: auto;
+    overflow: visible;
 }
 
 /* Charts section dynamically adjusts to account for the strip */
@@ -208,7 +208,37 @@ button:hover, .button:hover {
     flex: 1;
     overflow: hidden;
     transition: margin-right 0.5s ease-in-out, width 0.5s ease-in-out; /* Smooth resizing */
-    margin-right: 300px; /* Reserve space for the right strip */
+    margin-right: 0px; /* Reserve space for the right strip */
+}
+
+/* Right strip */
+.right-strip {
+    position: sticky; 
+    top: 0;
+    height: 100vh;
+    width: 300px; /* Fixed width for the strip */
+    background-color: #f4f4f4; /* Optional: Light background for contrast */
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); /* Visual separation */
+    display: flex;
+    overflow-y: auto;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it appears above other elements */
+    transition: transform 0.5s ease, clip-path 0.5s ease; /* Smooth slide animation */
+    clip-path: inset(0 0 0 0); /* Initially fully visible */
+}
+
+.right-strip.collapsed {
+    transform: translateX(100%); /* Slide it to the right */
+}
+
+.right-strip-wrapper {
+    position: relative;
+    flex: 1;
+    width: 300px;
+    overflow: hidden; /* Ensures content slides out of view */
+    height: 100vh;
 }
 
 /* Sticky Table Section */
@@ -244,41 +274,25 @@ button:hover, .button:hover {
     background-color: #f2f2f2;
 }
 
-/* Right strip */
-.right-strip {
-    position: fixed; /* Aligns relative to the chart-container */
-    top: 0;
-    right: 0;
-    height: 100%;
-    width: 300px; /* Fixed width for the strip */
-    background-color: #f4f4f4; /* Optional: Light background for contrast */
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); /* Visual separation */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Ensure it appears above other elements */
-    transition: transform 0.5s ease-in-out; /* Smooth sliding animation */
-    transform: translateX(0); /* Default position */
-}
-
-.right-strip.collapsed {
-    transform: translateX(100%);
-}
-
 /* Toggle button */
 .toggle-button {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    background-color: #007BFF;
+    position: sticky;
+    top: 20px; 
+    background-color: #2C3D55;
     color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
+    padding: 15px 20px;
+    border-left: 1px solid #3e4c5e;
     cursor: pointer;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1100;
+    z-index: 9999;
+    font-weight: bold;
+}
+
+.button-wrapper {
+    position: absolute;  /* Position the wrapper relative to the .chart-container */
+    top: 20px;  /* Distance from the top */
+    right: 0;   /* Align it to the right side of the container */
+    z-index: 1000;  /* Ensure it's above other content */
 }
 
 .toggle-button:hover {

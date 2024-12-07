@@ -3,291 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Collapsible Strip with Table Row Folding</title>
+    <title>Sticky Right Strip</title>
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-
-        /* Strip styling */
-        .right-strip {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 25%;
-            height: 100%;
-            background-color: #f4f4f4;
-            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+        /* Main container to hold both the chart and the right strip */
+        .main-container {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: transform 0.5s ease-in-out;
-            transform: translateX(0);
+            width: 100%;
+            height: 200vh; /* Artificially tall for scrolling demo */
+            border: 2px solid black;
         }
 
-        .right-strip.collapsed {
-            transform: translateX(100%);
-        }
-
-        /* Button styling */
-        .toggle-button {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-        }
-
-        .toggle-button:hover {
-            background-color: #0056b3;
-        }
-
-        /* Table container */
-        .table-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* Table styling */
-        table {
-            width: 90%;
-            border-collapse: collapse;
-            margin: 0 auto;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        table th, table td {
-            border: 1px solid #ddd;
-            text-align: center;
-            padding: 8px;
-        }
-
-        table th {
-            background-color: #007BFF;
-            color: white;
-        }
-
-        /* Row container for table rows */
-        .row-container {
-            display: table-row-group;
-        }
-
-        .row-container.collapsed {
-            display: none; /* Completely hide rows */
-        }
-
-        /* Hidden row content styling */
-        .unfolded-content {
-            display: none;
+        /* Left content container (charts) */
+        .chart-container {
+            flex: 3;
             padding: 10px;
-            background-color: #f9f9f9;
-            text-align: center;
+            background-color: #f0f0f0;
         }
 
-        .unfolded-buttons {
-            margin-bottom: 10px;
-        }
-
-        .unfolded-buttons button {
-            margin: 0 5px;
-            padding: 5px 10px;
-            border: none;
-            background-color: #007BFF;
-            color: white;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .unfolded-buttons button:hover {
-            background-color: #0056b3;
-        }
-
-        .unfolded-text {
-            width: 90%;
-            padding: 5px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+        /* Right strip container */
+        .right-strip {
+            flex: 1; /* Takes a fixed width */
+            position: sticky; /* Sticks in the viewport */
+            top: 0; /* Sticks to the top of the viewport */
+            height: 100vh; /* Full height of the viewport */
+            background-color: #d9e6f2;
+            overflow-y: auto; /* Scrollable content inside the strip */
+            border-left: 2px solid #ccc;
+            padding: 10px;
         }
     </style>
 </head>
 <body>
-    <!-- Toggle Button -->
-    <button id="toggleButton" class="toggle-button">Collapse</button>
+    <!-- Outer container -->
+    <div class="main-container">
+        <!-- Charts section -->
+        <div class="chart-container">
+            <p>Lorem ipsum content for charts goes here.</p>
+            <p>orem ipsum dolor sit amet, consectetur adipiscing elit. Aenean cursus arcu laoreet velit mollis mollis. Nunc ut mollis tellus. Aenean dictum tortor eget ligula varius hendrerit gravida in quam. Quisque pretium porta bibendum. Praesent in ultricies quam, quis scelerisque risus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Ut tristique placerat lorem, in posuere nibh facilisis at. Proin quis vestibulum tortor. In ut sapien libero. Pellentesque nibh orci, semper ut diam id, luctus mollis mauris. Praesent imperdiet magna vitae lectus imperdiet, non rhoncus ipsum cursus. Curabitur et aliquam dui.
 
-    <!-- Right Strip -->
-    <div id="rightStrip" class="right-strip">
-        <div class="table-container">
-            <!-- First Table -->
-            <table>
-                <thead>
-                    <tr>
-                        <th>Column 1</th>
-                        <th>Column 2</th>
-                        <th>Column 3</th>
-                        <th>
-                            <button class="row-toggle">▼</button>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="row-container">
-                    <tr>
-                        <td><button class="row-unfold">Col1</button></td>
-                        <td>Row1 Col2</td>
-                        <td>Row1 Col3</td>
-                        <td>Row1 Col4</td>
-                    </tr>
-                    <!-- Unfolded content row with colspan for spanning all columns -->
-                    <tr class="unfolded-content">
-                        <td colspan="4">
-                            <div class="unfolded-buttons">
-                                <button>Button 1</button>
-                                <button>Button 2</button>
-                                <button>Button 3</button>
-                            </div>
-                            <input type="text" class="unfolded-text" placeholder="Enter text here">
-                            <h4> TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING </h4>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><button class="row-unfold">Col2</button></td>
-                        <td>Row2 Col2</td>
-                        <td>Row2 Col3</td>
-                        <td>Row2 Col4</td>
-                    </tr>
-                    <tr class="unfolded-content">
-                        <td colspan="4">
-                            <div class="unfolded-buttons">
-                                <button>Button 1</button>
-                                <button>Button 2</button>
-                                <button>Button 3</button>
-                            </div>
-                            <input type="text" class="unfolded-text" placeholder="Enter text here">
-                            <h4> TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING </h4>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                Proin nec pretium nulla. Cras sit amet metus sodales, tincidunt arcu quis, porttitor arcu. Donec mattis molestie eros, at dictum diam suscipit aliquam. Morbi commodo nisl et ipsum ullamcorper ultricies vitae eu nunc. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse in mattis magna, vel iaculis enim. Phasellus pharetra diam felis, a malesuada ante viverra sit amet. Ut sit amet enim in ex semper suscipit. Proin eu sem a lectus dictum accumsan. In vel dolor quis purus accumsan dapibus sit amet in lorem.
+                
+                Mauris dictum lobortis sapien in accumsan. Integer sollicitudin ante lorem, ac condimentum arcu blandit ac. Nulla ante odio, placerat non lacus vitae, finibus sagittis neque. Nullam lobortis mollis massa, at volutpat velit pellentesque nec. Proin ut elementum elit, sit amet porttitor purus. Donec a vulputate dui. Quisque feugiat sit amet ante et egestas. Fusce laoreet lectus a faucibus sodales. Morbi eu elit tincidunt urna aliquam dignissim consequat a nibh. Nulla nec commodo sapien. Nulla tincidunt velit ante, non sodales enim lacinia id. Nunc fringilla, sapien at placerat laoreet, nisl nunc malesuada lorem, eu elementum eros risus at odio. Donec nec lacus nisl. Integer tincidunt, arcu quis convallis laoreet, nunc sem elementum sapien, et rhoncus tellus neque in diam. Ut vulputate molestie mollis.
+                
+                Morbi id augue consequat, ornare arcu at, sagittis odio. Pellentesque efficitur tincidunt massa et feugiat. Nullam neque sapien, varius eget risus non, pulvinar sagittis libero. Curabitur in elit et mi interdum dapibus. Praesent tempus erat id lorem vehicula feugiat. Pellentesque hendrerit lobortis arcu in pharetra. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Integer facilisis, orci vel vestibulum vestibulum, turpis dui cursus purus, in consequat nunc ex vitae augue. Mauris efficitur auctor ultricies. In nec dui pulvinar turpis maximus suscipit ut vitae sapien. Etiam venenatis mi eu convallis finibus. Cras turpis mauris, ultricies nec risus vitae, blandit eleifend mauris.
+                
+                Aliquam sed eleifend urna. Maecenas feugiat, eros quis pellentesque cursus, ligula nisi tincidunt diam, dapibus tristique tellus nulla vel ipsum. Suspendisse consectetur est massa, ac tempus sem sagittis eu. In sed justo eu nisi consectetur malesuada vitae sit amet augue. Nam dictum, magna eu vulputate varius, justo orci aliquet augue, et malesuada libero ante id metus. Maecenas at nibh nec enim pulvinar pharetra eu eget enim. Aliquam vel mattis velit, eu aliquam orci. Donec ultrices viverra sagittis. Ut lacus urna, interdum sed ante eget, feugiat iaculis massa. Ut ornare enim vel metus ultrices tempus. Quisque et lacus dictum, ullamcorper odio vel, consequat tellus. Sed ornare, turpis non ullamcorper egestas, augue justo tincidunt lacus, eget euismod lorem lorem a mi. Phasellus mauris odio, venenatis quis vestibulum non, viverra non magna. Maecenas iaculis odio ac felis pulvinar, quis euismod elit ornare. Aliquam condimentum porta dolor, in faucibus enim fermentum sit amet. </p>
+        </div>
 
-            <!-- Second Table -->
-            <table>
-                <thead>
-                    <tr>
-                        <th>Column 1</th>
-                        <th>Column 2</th>
-                        <th>Column 3</th>
-                        <th>
-                            <button class="row-toggle">▼</button>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="row-container">
-                    <tr>
-                        <td><button class="row-unfold">Col1</button></td>
-                        <td>Row1 Col2</td>
-                        <td>Row1 Col3</td>
-                        <td>Row1 Col4</td>
-                    </tr>
-                    <tr class="unfolded-content">
-                        <td colspan="4">
-                            <div class="unfolded-buttons">
-                                <button>Button 1</button>
-                                <button>Button 2</button>
-                                <button>Button 3</button>
-                            </div>
-                            <input type="text" class="unfolded-text" placeholder="Enter text here">
-                            <h4> TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING </h4>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><button class="row-unfold">Col1</button></td>
-                        <td>Row2 Col2</td>
-                        <td>Row2 Col3</td>
-                        <td>Row2 Col4</td>
-                    </tr>
-                    <tr class="unfolded-content">
-                        <td colspan="4">
-                            <div class="unfolded-buttons">
-                                <button>Button 1</button>
-                                <button>Button 2</button>
-                                <button>Button 3</button>
-                            </div>
-                            <input type="text" class="unfolded-text" placeholder="Enter text here">
-                            <h4> TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING </h4>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- Sticky right strip -->
+        <div class="right-strip">
+            <p>Lorem ipsum content for the right strip.</p>
+            <p>orem ipsum dolor sit amet, consectetur adipiscing elit. Aenean cursus arcu laoreet velit mollis mollis. Nunc ut mollis tellus. Aenean dictum tortor eget ligula varius hendrerit gravida in quam. Quisque pretium porta bibendum. Praesent in ultricies quam, quis scelerisque risus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Ut tristique placerat lorem, in posuere nibh facilisis at. Proin quis vestibulum tortor. In ut sapien libero. Pellentesque nibh orci, semper ut diam id, luctus mollis mauris. Praesent imperdiet magna vitae lectus imperdiet, non rhoncus ipsum cursus. Curabitur et aliquam dui.
+
+                Proin nec pretium nulla. Cras sit amet metus sodales, tincidunt arcu quis, porttitor arcu. Donec mattis molestie eros, at dictum diam suscipit aliquam. Morbi commodo nisl et ipsum ullamcorper ultricies vitae eu nunc. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse in mattis magna, vel iaculis enim. Phasellus pharetra diam felis, a malesuada ante viverra sit amet. Ut sit amet enim in ex semper suscipit. Proin eu sem a lectus dictum accumsan. In vel dolor quis purus accumsan dapibus sit amet in lorem.
+                
+                Mauris dictum lobortis sapien in accumsan. Integer sollicitudin ante lorem, ac condimentum arcu blandit ac. Nulla ante odio, placerat non lacus vitae, finibus sagittis neque. Nullam lobortis mollis massa, at volutpat velit pellentesque nec. Proin ut elementum elit, sit amet porttitor purus. Donec a vulputate dui. Quisque feugiat sit amet ante et egestas. Fusce laoreet lectus a faucibus sodales. Morbi eu elit tincidunt urna aliquam dignissim consequat a nibh. Nulla nec commodo sapien. Nulla tincidunt velit ante, non sodales enim lacinia id. Nunc fringilla, sapien at placerat laoreet, nisl nunc malesuada lorem, eu elementum eros risus at odio. Donec nec lacus nisl. Integer tincidunt, arcu quis convallis laoreet, nunc sem elementum sapien, et rhoncus tellus neque in diam. Ut vulputate molestie mollis.
+                
+                Morbi id augue consequat, ornare arcu at, sagittis odio. Pellentesque efficitur tincidunt massa et feugiat. Nullam neque sapien, varius eget risus non, pulvinar sagittis libero. Curabitur in elit et mi interdum dapibus. Praesent tempus erat id lorem vehicula feugiat. Pellentesque hendrerit lobortis arcu in pharetra. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Integer facilisis, orci vel vestibulum vestibulum, turpis dui cursus purus, in consequat nunc ex vitae augue. Mauris efficitur auctor ultricies. In nec dui pulvinar turpis maximus suscipit ut vitae sapien. Etiam venenatis mi eu convallis finibus. Cras turpis mauris, ultricies nec risus vitae, blandit eleifend mauris.
+                
+                Aliquam sed eleifend urna. Maecenas feugiat, eros quis pellentesque cursus, ligula nisi tincidunt diam, dapibus tristique tellus nulla vel ipsum. Suspendisse consectetur est massa, ac tempus sem sagittis eu. In sed justo eu nisi consectetur malesuada vitae sit amet augue. Nam dictum, magna eu vulputate varius, justo orci aliquet augue, et malesuada libero ante id metus. Maecenas at nibh nec enim pulvinar pharetra eu eget enim. Aliquam vel mattis velit, eu aliquam orci. Donec ultrices viverra sagittis. Ut lacus urna, interdum sed ante eget, feugiat iaculis massa. Ut ornare enim vel metus ultrices tempus. Quisque et lacus dictum, ullamcorper odio vel, consequat tellus. Sed ornare, turpis non ullamcorper egestas, augue justo tincidunt lacus, eget euismod lorem lorem a mi. Phasellus mauris odio, venenatis quis vestibulum non, viverra non magna. Maecenas iaculis odio ac felis pulvinar, quis euismod elit ornare. Aliquam condimentum porta dolor, in faucibus enim fermentum sit amet. </p>
         </div>
     </div>
-
-    <script>
-        // JavaScript for strip collapsing
-        const toggleButton = document.getElementById('toggleButton');
-        const rightStrip = document.getElementById('rightStrip');
-
-        toggleButton.addEventListener('click', () => {
-            const isCollapsed = rightStrip.classList.toggle('collapsed');
-            console.log("Strip collapsed state:", isCollapsed);
-            toggleButton.textContent = isCollapsed ? 'Expand' : 'Collapse';
-        });
-
-        // JavaScript for table row collapsing
-        const rowToggleButtons = document.querySelectorAll('.row-toggle');
-
-        rowToggleButtons.forEach((button, index) => {
-            button.addEventListener('click', () => {
-                console.log(`Toggle button clicked for table ${index + 1}`);
-                const rowContainer = button.closest('table').querySelector('.row-container');
-                if (rowContainer) {
-                    const isCollapsed = rowContainer.classList.toggle('collapsed');
-                    console.log(`Row container collapsed state for table ${index + 1}:`, isCollapsed);
-                    button.textContent = isCollapsed ? '▶' : '▼';
-                } else {
-                    console.error(`No row-container found for table ${index + 1}`);
-                }
-            });
-        });
-
-        // JavaScript for row unfolding with closing other rows
-        const rowUnfoldButtons = document.querySelectorAll('.row-unfold');
-
-        rowUnfoldButtons.forEach((button) => {
-            button.addEventListener('click', () => {
-                const currentRow = button.closest('tr');
-                const table = currentRow.closest('table');
-                const unfoldedContent = currentRow.nextElementSibling;
-                
-                if (unfoldedContent && unfoldedContent.classList.contains('unfolded-content')) {
-                    // Close all other unfolded rows in the table
-                    const otherUnfoldedRows = table.querySelectorAll('.unfolded-content');
-                    otherUnfoldedRows.forEach(row => {
-                        if (row !== unfoldedContent) {
-                            row.style.display = 'none';
-                            row.previousElementSibling.querySelector('.row-unfold').textContent = '+'; // Reset the button text
-                        }
-                    });
-
-                    // Toggle the display of the clicked row's unfolded content
-                    if (unfoldedContent.style.display === "none" || unfoldedContent.style.display === "") {
-                        unfoldedContent.style.display = "table-row"; // Use table-row to keep table structure
-                        button.textContent = '-'; // Change to collapse button
-                    } else {
-                        unfoldedContent.style.display = "none";
-                        button.textContent = '+'; // Change to expand button
-                    }
-                }
-            });
-        });
-
-        
-    </script>
 </body>
 </html>
