@@ -57,14 +57,17 @@ class User_Login(db.Model):
 
 class Vote(db.Model): 
     id: so.Mapped[int] = so.mapped_column(primary_key=True) 
-    user_vote: so.Mapped[int] = so.mapped_column(sa.Integer) 
+    user_vote: so.Mapped[str] = so.mapped_column(sa.String, nullable=True)  # Changed to string
     vote_time: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now(wars_tz)) 
-    interacting_user: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id),index=True)
-    chart_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey("chart.id"), index=True) # "Chart.id" bo klasa Chart jest zdefiniowana po klasie Vote
-    revision_number: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=False) # wersja głosu
+    interacting_user: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
+    chart_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey("chart.id"), index=True)
+    revision_number: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=False)
+    user_comment: so.Mapped[str] = so.mapped_column(sa.String, nullable=True)  # Added user_comment
+    timespan_id: so.Mapped[int] = so.mapped_column(sa.Integer, sa.ForeignKey('model__timespans.id'), nullable=True)
 
-    interacter: so.Mapped[User] = so.relationship(back_populates = 'user_votes')
-    chart: so.Mapped["Chart"] = so.relationship(back_populates = 'chart_votes') # "Chart" zamiast Chart ponieważ klasa Chart jeszcze nie istnieje i bez "" jest błąd
+    interacter: so.Mapped[User] = so.relationship(back_populates='user_votes')
+    chart: so.Mapped["Chart"] = so.relationship(back_populates='chart_votes')
+    timespan: so.Mapped['Model_Timespans'] = so.relationship(back_populates='votes')  # New relation
 
 class Chart(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
@@ -80,8 +83,10 @@ class Model_Timespans(db.Model):
     model_timespan_start: so.Mapped[float] = so.mapped_column(sa.Float, nullable=False)
     model_timespan_end: so.Mapped[float] = so.mapped_column(sa.Float, nullable=False)
     chart_id: so.Mapped[int] = so.mapped_column(sa.Integer, sa.ForeignKey('chart.id'), nullable=False)
+    model_proposition: so.Mapped[str] = so.mapped_column(sa.String, nullable=True)  # Added model_proposition
 
     chart: so.Mapped['Chart'] = so.relationship(back_populates='model_timespans')
+    votes: so.Mapped[list[Vote]] = so.relationship(back_populates='timespan')  # New relation
 
 class User_Timespans(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
