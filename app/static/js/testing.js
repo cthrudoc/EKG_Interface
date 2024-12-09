@@ -252,6 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 unfoldedRow.style.display = index === 0 ? 'table-row' : 'none'; // Unfold the first row by default
                 unfoldedRow.innerHTML = `
                     <td colspan="4">
+                        <p>${timespan.model_proposition}</p>
                         <div class="unfolded-buttons">
                             <button>Button 1</button>
                             <button>Button 2</button>
