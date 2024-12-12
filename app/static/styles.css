@@ -36,11 +36,11 @@ body {
     height: 100%;
     box-sizing: border-box;
 }
-
+/* No border on the last link 
 .navbar .nav-item:last-child {
-    border-right: none; /* No border on the last link */
+    border-right: none; 
 }
-
+*/
 .navbar .nav-item:hover {
     background-color: #3e4c5e; /* Slightly lighter blue for hover */
     color: #6a687a; /* Muted purple for hover text */
@@ -82,6 +82,7 @@ form {
     text-align: center; /* Centers the text */
 }
 
+/* Default rules for a button. */
 button, .button {
     background-color: #3e4c5e; /* Muted blue */
     color: #ffffff; /* White text */
@@ -270,7 +271,7 @@ button:hover, .button:hover {
 }
 
 #timespanTable thead {
-    background-color: #3498db;
+    background-color: #6a687a;
     color: white;
 }
 

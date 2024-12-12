@@ -254,9 +254,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td colspan="4">
                         <p>${timespan.model_proposition}</p>
                         <div class="unfolded-buttons">
-                            <button>Button 1</button>
-                            <button>Button 2</button>
-                            <button>Button 3</button>
+                            <button class="button grey-theme">Button 1</button>
+                            <button class="button grey-theme">Button 2</button>
+                            <button class="button grey-theme">Button 3</button>
                         </div>
                         <input type="text" class="unfolded-text" placeholder="Enter text here">
                         <button class="submit-vote button dark-theme">Submit</button>

@@ -10,11 +10,11 @@
     </head>
     <body>
         <div class="navbar">
-            <a class="nav-item" href="{{ url_for('wykres') }}">Wykres</a>
             {% if current_user.is_anonymous %}
             <a class="nav-item" href="{{ url_for('login') }}">Login</a>
             {% else %}
             <a class="nav-item" href="{{ url_for('user', username=current_user.username) }}">Profile</a>
+            <a class="nav-item" href="{{ url_for('wykres') }}">Chart</a>
             <a class="nav-item" href="{{ url_for('logout') }}">Logout</a>
             {% endif %}
         </div>
