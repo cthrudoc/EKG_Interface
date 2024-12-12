@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>${(index + 1)}</td>
                     <td>${timespan.start_time.toFixed(2)}</td>
                     <td>${timespan.end_time.toFixed(2)}</td>
-                    <td><button class="row-unfold dark-button">+</button></td>
+                    <td><button class="row-unfold dark-square">+</button></td>
                 `;
                 timespanTableBody.appendChild(row);
 
@@ -259,6 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <button>Button 3</button>
                         </div>
                         <input type="text" class="unfolded-text" placeholder="Enter text here">
+                        <button class="submit-vote dark-button">Submit</button>
                     </td>
                 `;
                 timespanTableBody.appendChild(unfoldedRow);
