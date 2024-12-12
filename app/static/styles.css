@@ -10,15 +10,19 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    padding-top: 20px;
     background-color: #35455a; 
 }
 
 /* Navigation Bar */
 .navbar {
     display: flex;
+    position: sticky;
+    top: 0;   
     justify-content: flex-start; /* Align items to the left */
     background-color: #2C3D55; /* Dark blue background */
     padding: 0;
+    z-index: 9999;
     margin-bottom: 20px;
 }
 
@@ -44,6 +48,11 @@ body {
 .navbar .nav-item:hover {
     background-color: #3e4c5e; /* Slightly lighter blue for hover */
     color: #6a687a; /* Muted purple for hover text */
+}
+
+.nav-item.right-allign {
+    margin-left: auto;
+    border-left: 1px solid #3e4c5e;
 }
 
 /* Table Styling */
@@ -285,8 +294,7 @@ button:hover, .button:hover {
     background-color: #f2f2f2;
 }
 
-/* Toggle button */
-.toggle-button {
+/* [TODO] Toggle button. I failed to implement it properly. Redundant now. 
     position: sticky;
     top: 20px; 
     background-color: #2C3D55;
@@ -295,21 +303,22 @@ button:hover, .button:hover {
     border-left: 1px solid #3e4c5e;
     cursor: pointer;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 9999;
+    z-index: 9998;
     font-weight: bold;
 }
 
+
 .button-wrapper {
-    position: absolute;  /* Position the wrapper relative to the .chart-container */
-    top: 20px;  /* Distance from the top */
-    right: 0;   /* Align it to the right side of the container */
-    z-index: 1000;  /* Ensure it's above other content */
+    position: absolute;  
+    top: 20px; 
+    right: 0;  
+    z-index: 1000; 
 }
 
 .toggle-button:hover {
     background-color: #0056b3;
 }
-
+*/
 /* Collapsible container */
 .collapsible {
     transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
