@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 unfoldedRow.innerHTML = `
                     <td colspan="4">
                         <p>${timespan.model_proposition}</p>
-                        <div class="unfolded-buttons">
+                        <div >
                             <button class="button grey-theme">Button 1</button>
                             <button class="button grey-theme">Button 2</button>
                             <button class="button grey-theme">Button 3</button>

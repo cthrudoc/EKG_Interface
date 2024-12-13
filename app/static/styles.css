@@ -190,13 +190,12 @@ button:hover, .button:hover {
 }
 
 .grey-theme {
-    background-color: #6a687a
+    background-color: #84828f
 }
 
 .grey-theme:hover{
     background-color: #777585;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    
 }
 
 
@@ -344,28 +343,24 @@ button:hover, .button:hover {
 
 /* Hidden row content */
 .unfolded-content {
-    display: none;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
     padding: 10px;
     background-color: #f9f9f9;
-    text-align: center;
+    text-align: left;
+    gap: 10px; 
 }
 
 .unfolded-content.active {
     display: block;
 }
 
-.unfolded-buttons button {
-    margin: 0 5px;
-    padding: 5px 10px;
-    border: none;
-    background-color: #007BFF;
-    color: white;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.unfolded-buttons button:hover {
-    background-color: #0056b3;
+.unfolded-content .button {
+    width: calc(100% - 20px); /* Full width minus 10px padding on each side */
+    padding: 10px;
+    text-align: left !important;
+    box-sizing: border-box; /* Include padding in width calculation */
 }
 
 .unfolded-text {
