@@ -254,9 +254,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td colspan="4">
                         <p>${timespan.model_proposition}</p>
                         <div >
-                            <button class="button grey-theme">Button 1</button>
-                            <button class="button grey-theme">Button 2</button>
-                            <button class="button grey-theme">Button 3</button>
+                            <button class="button toggle-button grey-theme vote-accurate">Button 1</button>
+                            <button class="button toggle-button grey-theme vote-inaccurate">Button 2</button>
+                            <button class="button toggle-button grey-theme vote-comment">Button 3</button>
                         </div>
                         <input type="text" class="unfolded-text" placeholder="Enter text here">
                         <button class="submit-vote button dark-theme">Submit</button>
@@ -287,6 +287,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     unfoldButton.disabled = !isUnfolded; // Disable the button for currently unfolded row
                     });
                 });
+                unfoldedRow.querySelectorAll('.toggle-button').forEach(button => {
+                    button.addEventListener('click', () => {
+                        // Set all buttons in the current unfolded row to grey theme
+                        unfoldedRow.querySelectorAll('.toggle-button').forEach(b => {
+                            b.classList.remove('dark-theme'); // Remove dark theme
+                            b.classList.add('grey-theme');   // Apply grey theme
+                            b.setAttribute('data-toggle', 'false'); // Reset data-toggle
+                            console.log('[wykres.js][.toggle-button] Changed buttons to grey.');
+                        });
+                
+                        // Set clicked button to dark theme
+                        button.classList.remove('grey-theme');
+                        button.classList.add('dark-theme');
+                        button.setAttribute('data-toggle', 'true'); // Mark as active
+                        console.log('[wykres.js][.toggle-button] Changed active button to dark.');
+                    });
+                });
+                
             });
 
             // JavaScript for table collapsing
@@ -373,7 +391,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             console.log("[wykres.js][table] Timespan table populated and event listeners for load buttons added");
-        
+            
+            // Voting subterritory       
 
             // SYNCHRONISATION TERRITORY STARTS HERE
             // Debounce function to limit the frequency of updates
