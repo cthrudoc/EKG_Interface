@@ -314,6 +314,38 @@ def api_chart_data():
     
     return chart_data
 
+@app.route('/api/submit_vote', methods=['POST'])
+@login_required
+def submit_vote():
+    data = request.json
+    user_vote = data.get('user_vote')
+    user_comment = data.get('user_comment')
+    timespan_id = data.get('timespan_id')
+
+    if not user_vote or not timespan_id:
+        print('[routes.py][/api/submit_vote] not user_vote or not timespan_id')
+        return jsonify({"success": False, "error": "Invalid data"}), 400
+
+    # Save or update vote
+    vote = Vote.query.filter_by(
+        interacting_user=current_user.id,
+        timespan_id=timespan_id,
+    ).first()
+
+    if not vote:
+        vote = Vote(
+            interacting_user=current_user.id,
+            timespan_id=timespan_id,
+            chart_id=current_chart.id,  # Assuming you track this
+        )
+
+    vote.user_vote = user_vote
+    vote.user_comment = user_comment
+    vote.revision_number += 1
+    db.session.add(vote)
+    db.session.commit()
+
+    return jsonify({"success": True})
 
 
 ####################### ADMIN TERRITORY #######################

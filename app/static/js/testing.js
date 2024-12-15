@@ -258,7 +258,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             <button class="button toggle-button grey-theme vote-inaccurate">Button 2</button>
                             <button class="button toggle-button grey-theme vote-comment">Button 3</button>
                         </div>
-                        <input type="text" class="unfolded-text" placeholder="Enter text here">
+                        <p class='comment-feedback'></p>
+                        <input type="text" class="unfolded-text comment-feedback" placeholder="Enter text here">
                         <button class="submit-vote button dark-theme">Submit</button>
                     </td>
                 `;
@@ -287,6 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     unfoldButton.disabled = !isUnfolded; // Disable the button for currently unfolded row
                     });
                 });
+                // Selecting vote
                 unfoldedRow.querySelectorAll('.toggle-button').forEach(button => {
                     button.addEventListener('click', () => {
                         // Set all buttons in the current unfolded row to grey theme
@@ -304,6 +306,54 @@ document.addEventListener('DOMContentLoaded', function() {
                         console.log('[wykres.js][.toggle-button] Changed active button to dark.');
                     });
                 });
+                // Submitting vote 
+                unfoldedRow.querySelector('.submit-vote').addEventListener('click', () => {
+                    const activeButton = unfoldedRow.querySelector('.toggle-button.dark-theme');
+                    const commentField = unfoldedRow.querySelector('.unfolded-text');
+                    const comment = commentField.value.trim();
+                    const feedbackText = unfoldedRow.querySelector('.comment-feedback');
+                
+                    // Ensure an active button is selected
+                    if (!activeButton) {
+                        feedbackText.textContent = 'Please select a vote option.';
+                        console.log('[wykres.js][submit-vote] Option not selected.');
+                        return;
+                    }
+                
+                    // Check if a comment is required
+                    const requiresComment = !activeButton.classList.contains('vote-accurate'); // Button 1 does not require a comment
+                    if (requiresComment && comment === '') {
+                        feedbackText.textContent = 'Comment is required for this option.';
+                        console.log('[wykres.js][submit-vote] Required comment not submitted.');
+                        commentField.classList.add('error');
+                        return;
+                    }
+                
+                    // Clear feedback and error styling
+                    feedbackText.textContent = '';
+                    commentField.classList.remove('error');
+                
+                    // Gather payload
+                    const payload = {
+                        timespan_id: unfoldedRow.getAttribute('data-timespan-id'),
+                        vote: activeButton.textContent.trim(),
+                        comment: comment
+                    };
+                
+                    // Submit vote via fetch
+                    fetch('/api/submit_vote', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    }).then(response => {
+                        if (response.ok) {
+                            feedbackText.textContent = 'Vote submitted successfully!';
+                        } else {
+                            alert('Error submitting vote! Administrator has been notified and automatically scheduled for disciplinary lashing. In the meanwhile : Please report it at the bottom of the page. ');
+                        }
+                    });
+                });                
+
                 
             });
 
