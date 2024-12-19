@@ -235,7 +235,7 @@ def api_wykres():
     else:
         chart = db.first_or_404(sa.select(Chart).where(Chart.id == user.last_chart))
         chart_id = chart.id
-    # zapisywanie wyświetlanego wykresu jako ostatniego zapisanego
+    # zapisywanie wyświetlanego wykresu jako ostatniego zapisanego 
     user.last_chart = chart_id
     db.session.commit()
 
@@ -244,7 +244,7 @@ def api_wykres():
         sa.select(Model_Timespans).where(Model_Timespans.chart_id == chart_id)
     ).scalars().all()
     timespan_data = [
-        {"start_time": ts.model_timespan_start, "end_time": ts.model_timespan_end, 'model_proposition': ts.model_proposition}
+        {"start_time": ts.model_timespan_start, "end_time": ts.model_timespan_end, 'model_proposition': ts.model_proposition, 'timespan_id': ts.id}
         for ts in timespans
     ]
     
@@ -318,15 +318,20 @@ def api_chart_data():
 @login_required
 def submit_vote():
     data = request.json
+    print(f'[routes.py][/api/submit_vote] data : {data}')
     user_vote = data.get('user_vote')
     user_comment = data.get('user_comment')
     timespan_id = data.get('timespan_id')
+    print(f'[routes.py][/api/submit_vote] pythonified data : user_vote : {user_vote}, timespan_id : {timespan_id}')
 
     if not user_vote or not timespan_id:
         print('[routes.py][/api/submit_vote] not user_vote or not timespan_id')
         return jsonify({"success": False, "error": "Invalid data"}), 400
 
+    # [TODO][BUG] below this point in this route, only untested bullshit
+
     # Save or update vote
+    '''
     vote = Vote.query.filter_by(
         interacting_user=current_user.id,
         timespan_id=timespan_id,
@@ -344,7 +349,7 @@ def submit_vote():
     vote.revision_number += 1
     db.session.add(vote)
     db.session.commit()
-
+'''
     return jsonify({"success": True})
 
 

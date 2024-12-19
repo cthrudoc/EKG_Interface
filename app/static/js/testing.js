@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 row.setAttribute('data-end', timespan.end_time);
 
                 row.innerHTML = `
-                    <td>${(index + 1)}</td>
+                    <td>${timespan.timespan_id}</td>
                     <td>${timespan.start_time.toFixed(2)}</td>
                     <td>${timespan.end_time.toFixed(2)}</td>
                     <td><button class="row-unfold square dark-theme">+</button></td>
@@ -248,6 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Create the unfolded content row (hidden by default)
                 const unfoldedRow = document.createElement('tr');
                 unfoldedRow.classList.add('unfolded-content');
+                unfoldedRow.setAttribute('data-timespan-id', timespan.timespan_id)
                 unfoldedRow.style.display = 'none'; // Hidden by default
                 unfoldedRow.style.display = index === 0 ? 'table-row' : 'none'; // Unfold the first row by default
                 unfoldedRow.innerHTML = `
@@ -336,9 +337,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Gather payload
                     const payload = {
                         timespan_id: unfoldedRow.getAttribute('data-timespan-id'),
-                        vote: activeButton.textContent.trim(),
+                        user_vote: activeButton.textContent.trim(),
                         comment: comment
                     };
+                    console.log('[wykres.js][submit-vote] Payload timespan ID : ', unfoldedRow.getAttribute('data-timespan-id')) // [DEBUG] 
                 
                     // Submit vote via fetch
                     fetch('/api/submit_vote', {
@@ -349,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (response.ok) {
                             feedbackText.textContent = 'Vote submitted successfully!';
                         } else {
-                            alert('Error submitting vote! Administrator has been notified and automatically scheduled for disciplinary lashing. In the meanwhile : Please report it at the bottom of the page. ');
+                            alert('Error submitting vote! Administrator has been notified. In the meanwhile : Please report it at the bottom of the page. ');
                         }
                     });
                 });                
