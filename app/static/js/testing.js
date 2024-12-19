@@ -297,6 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             b.classList.remove('dark-theme'); // Remove dark theme
                             b.classList.add('grey-theme');   // Apply grey theme
                             b.setAttribute('data-toggle', 'false'); // Reset data-toggle
+                            b.setAttribute('data-vote', 'false');  // Reset data-vote to false
                             console.log('[wykres.js][.toggle-button] Changed buttons to grey.');
                         });
                 
@@ -304,6 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         button.classList.remove('grey-theme');
                         button.classList.add('dark-theme');
                         button.setAttribute('data-toggle', 'true'); // Mark as active
+                        button.setAttribute('data-vote', 'true'); // Set data-vote to true for clicked button
                         console.log('[wykres.js][.toggle-button] Changed active button to dark.');
                     });
                 });
@@ -333,7 +335,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Clear feedback and error styling
                     feedbackText.textContent = '';
                     commentField.classList.remove('error');
-                
+
+                    console.log('[wykres.js][submit-vote] user_vote raw :', activeButton.getAttribute('data-vote')) 
+                    console.log('[wykres.js][submit-vote] user_vote tried :', activeButton.getAttribute('data-vote') === 'true') 
                     // Gather payload
                     const payload = {
                         timespan_id: unfoldedRow.getAttribute('data-timespan-id'),
@@ -341,7 +345,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         user_comment: comment,
                         chart_id : chartId
                     };
-                    console.log('[wykres.js][submit-vote] Payload timespan ID : ', unfoldedRow.getAttribute('data-timespan-id')) // [DEBUG] 
+                    // console.log('[wykres.js][submit-vote] Payload timespan ID : ', unfoldedRow.getAttribute('data-timespan-id')) // [DEBUG] 
                 
                     // Submit vote via fetch
                     fetch('/api/submit_vote', {
