@@ -255,9 +255,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td colspan="4">
                         <p>${timespan.model_proposition}</p>
                         <div >
-                            <button class="button toggle-button grey-theme vote-accurate">Button 1</button>
-                            <button class="button toggle-button grey-theme vote-inaccurate">Button 2</button>
-                            <button class="button toggle-button grey-theme vote-comment">Button 3</button>
+                            <button class="button toggle-button grey-theme vote-accurate" data_vote="true">Button 1</button>
+                            <button class="button toggle-button grey-theme vote-inaccurate" data_vote="false">Button 2</button>
+                            <button class="button toggle-button grey-theme vote-comment" data_vote="false">Button 3</button>
                         </div>
                         <p class='comment-feedback'></p>
                         <input type="text" class="unfolded-text comment-feedback" placeholder="Enter text here">
@@ -337,8 +337,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Gather payload
                     const payload = {
                         timespan_id: unfoldedRow.getAttribute('data-timespan-id'),
-                        user_vote: activeButton.textContent.trim(),
-                        comment: comment
+                        user_vote: activeButton.getAttribute('data-vote') === 'true',
+                        user_comment: comment,
+                        chart_id : chartId
                     };
                     console.log('[wykres.js][submit-vote] Payload timespan ID : ', unfoldedRow.getAttribute('data-timespan-id')) // [DEBUG] 
                 

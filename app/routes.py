@@ -321,37 +321,41 @@ def submit_vote():
     print(f'[routes.py][/api/submit_vote] data : {data}')
     user_vote = data.get('user_vote')
     user_comment = data.get('user_comment')
-    timespan_id = data.get('timespan_id')
+    timespan_id = int(data.get('timespan_id'))
+    chart_id = int(data['chart_id'])
     print(f'[routes.py][/api/submit_vote] pythonified data : user_vote : {user_vote}, timespan_id : {timespan_id}')
 
-    if not user_vote or not timespan_id:
+    if user_vote is None or not timespan_id:
         print('[routes.py][/api/submit_vote] not user_vote or not timespan_id')
         return jsonify({"success": False, "error": "Invalid data"}), 400
 
     # [TODO][BUG] below this point in this route, only untested bullshit
 
-    # Save or update vote
-    '''
-    vote = Vote.query.filter_by(
+    # Fetch the latest revision number for this timespan and user
+    latest_vote = db.session.execute(
+        sa.select(Vote)
+        .where(Vote.interacting_user == current_user.id, Vote.timespan_id == timespan_id)
+        .order_by(Vote.revision_number.desc())
+    ).scalars().first()
+
+    new_revision_number = (latest_vote.revision_number + 1) if latest_vote else 1
+
+    # Create a new vote
+    new_vote = Vote(
         interacting_user=current_user.id,
         timespan_id=timespan_id,
-    ).first()
+        chart_id=chart_id,  # Ensure this is correctly defined
+        user_vote=user_vote,
+        user_comment=user_comment,
+        revision_number=new_revision_number
+    )
 
-    if not vote:
-        vote = Vote(
-            interacting_user=current_user.id,
-            timespan_id=timespan_id,
-            chart_id=current_chart.id,  # Assuming you track this
-        )
-
-    vote.user_vote = user_vote
-    vote.user_comment = user_comment
-    vote.revision_number += 1
-    db.session.add(vote)
+    # Save to the database
+    db.session.add(new_vote)
     db.session.commit()
-'''
-    return jsonify({"success": True})
 
+    print('[routes.py][/api/submit_vote] Vote saved successfully.')
+    return jsonify({"success": True})
 
 ####################### ADMIN TERRITORY #######################
 
