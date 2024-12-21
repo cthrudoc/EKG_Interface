@@ -19,7 +19,7 @@ import json
 
 ####################### UTILITY TERRITORY #######################
 
-context = 30 # Time added to the sides of the ECG fragment for context | GLOBAL VAR (I HEARD IT'S BAD(WORKS THO))
+context = 15 # Time added to the sides of the ECG fragment for context | GLOBAL VAR (I HEARD IT'S BAD(WORKS THO))
 
 ## Timezone handling
 wars_tz = ZoneInfo('Europe/Warsaw') 
@@ -268,11 +268,32 @@ def api_wykres():
     timespans = db.session.execute(
         sa.select(Model_Timespans).where(Model_Timespans.chart_id == chart_id)
     ).scalars().all()
-    timespan_data = [
-        {"start_time": ts.model_timespan_start, "end_time": ts.model_timespan_end, 'model_proposition': ts.model_proposition, 'timespan_id': ts.id}
-        for ts in timespans
-    ]
+
+    ## Fetch votes for the user on this chart
+    votes = db.session.execute(
+        sa.select(Vote)
+        .where(Vote.chart_id == chart_id, Vote.interacting_user == user.id)
+    ).scalars().all()
+
+    # Organize votes by timespan_id
+    latest_votes = {}
+    for vote in votes:
+        if vote.timespan_id not in latest_votes or vote.revision_number > latest_votes[vote.timespan_id].revision_number:
+            latest_votes[vote.timespan_id] = vote
     
+       ## Enrich timespan data with user's votes
+    timespan_data = []
+    for ts in timespans:
+        vote = latest_votes.get(ts.id, None)
+        timespan_data.append({
+            "timespan_id": ts.id,
+            "start_time": ts.model_timespan_start,
+            "end_time": ts.model_timespan_end,
+            "model_proposition": ts.model_proposition,
+            "user_vote": vote.user_vote if vote else None,
+            "user_comment": vote.user_comment if vote else None
+        })
+
     ## Initial timespan from which the first chart will be drawn 
     if timespan_data:
         initial_timespan_raw = timespan_data[0]
@@ -369,7 +390,7 @@ def submit_vote():
     new_vote = Vote(
         interacting_user=current_user.id,
         timespan_id=timespan_id,
-        chart_id=chart_id,  # Ensure this is correctly defined
+        chart_id=chart_id,  
         user_vote=user_vote,
         user_comment=user_comment,
         revision_number=new_revision_number

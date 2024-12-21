@@ -232,6 +232,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Populate table with timespans
             timespans.forEach((timespan, index) => {
+
                 // Create the regular row
                 const row = document.createElement('tr');
                 row.setAttribute('data-start', timespan.start_time); // Set data attributes for loading logic
@@ -266,6 +267,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
                 timespanTableBody.appendChild(unfoldedRow);
 
+                // New Code: Pre-fill data for timespans
+                if (timespan.user_vote !== undefined) {
+                    // Locate buttons in the current unfoldedRow
+                    const accurateButton = unfoldedRow.querySelector('.vote-accurate');
+                    const inaccurateButton = unfoldedRow.querySelector('.vote-inaccurate');
+                    const commentButton = unfoldedRow.querySelector('.vote-comment');
+                    
+                    // Pre-fill the vote button
+                    if (timespan.user_vote === "1" && accurateButton) {
+                        accurateButton.classList.remove('grey-theme');
+                        accurateButton.classList.add('dark-theme');
+                        accurateButton.setAttribute('data-toggle', 'true');
+                    } else if (timespan.user_vote === "0" && inaccurateButton) {
+                        inaccurateButton.classList.remove('grey-theme');
+                        inaccurateButton.classList.add('dark-theme');
+                        inaccurateButton.setAttribute('data-toggle', 'true');
+                    } else if (commentButton) {
+                        commentButton.classList.remove('grey-theme');
+                        commentButton.classList.add('dark-theme');
+                        commentButton.setAttribute('data-toggle', 'true');
+                    }
+
+                    // Pre-fill the comment box
+                    const commentBox = unfoldedRow.querySelector('.unfolded-text.comment-feedback');
+                    if (commentBox) {
+                        commentBox.value = timespan.user_comment || '';
+                    }
+                }
+                
                 // Handle row unfold action (toggle + to - and show/hide content)
                 const unfoldButton = row.querySelector('.row-unfold');
                 if (index === 0) { // Disable the button for the first row by default
@@ -393,8 +423,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         return;
                     }
 
-                    const extendedStart = Math.max(xMin, start - 30); // Add buffer
-                    const extendedEnd = Math.min(xMax, end + 30); // Add buffer
+                    const extendedStart = Math.max(xMin, start - 15) // Add buffer
+                    const extendedEnd = Math.min(xMax, end + 15); // Add buffer
 
                     console.log(`[wykres.js][.row-unfold] Loading timespan: ${extendedStart} to ${extendedEnd}`);
 
