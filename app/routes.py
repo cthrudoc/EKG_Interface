@@ -120,17 +120,32 @@ def logout():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-#    if current_user.is_authenticated:
-#        return redirect(url_for('login'))
+    print("Entered the /register route")  # Debug entry to route
+    # if current_user.is_authenticated:
+    #     print("User is already authenticated")
+    #     return redirect(url_for('login'))
+    
     form = RegistrationForm()
-    if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        flash('Użytkownik zarejestrowany')
-        return redirect(url_for('register'))
+    if request.method == 'POST':
+        print("Form submitted")  # Debug form submission
+        if form.validate_on_submit():
+            print("Form validation successful")  # Debug validation success
+            print(f"Username: {form.username.data}, Email: {form.email.data}")  # Debug input data
+            try:
+                user = User(username=form.username.data, email=form.email.data)
+                user.set_password(form.password.data)
+                db.session.add(user)
+                db.session.commit()
+                print("User added to the database")  # Debug successful user addition
+                flash('Użytkownik zarejestrowany')
+                return redirect(url_for('register'))
+            except Exception as e:
+                print(f"Error during registration: {e}")  # Debug any exceptions
+        else:
+            print("Form validation failed")  # Debug validation failure
+            print(form.errors)  # Debug specific validation errors
     return render_template('register.html', title='Register', form=form)
+
 
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
