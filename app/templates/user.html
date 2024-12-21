@@ -21,11 +21,11 @@
             {% for chart in chart_data %}
                 <tr>
                     <th class="item-col">
-                        <a href="{{ url_for('wykres', chart_id=chart.chart_id) }}" class="square grey-theme">
+                        <a href="{{ url_for('wykres', chart_id=chart.chart_id) }}" class="square {{chart.color_status}}">
                             {{ chart.chart_id }}
                         </a>
                     </th>
-                    <td class="item-col" >{{ chart.requester_vote }}</td>
+                    <td class="item-col" >{{ chart.votes_summary }}</td>
                 </tr>
             {% endfor %}
         </tbody>

@@ -4,6 +4,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from functools import wraps
 import sqlalchemy as sa
 import sqlalchemy.orm as so
+from sqlalchemy import and_
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm
 from app.models import User, User_Login, Chart, Vote, Post, Model_Timespans
@@ -186,24 +187,33 @@ def user(username):
     next_page = page + 1 if page*per_page < total_charts else None 
     prev_page = page - 1 if page >1 else None # jeżeli strona to 1 to nie wyświetlamy strony "zero"
 
-    # tworzenie dict najnowszych głosów (bez powtórzonych głosów)
-    votes = db.session.execute(sa.select(Vote).where(Vote.interacting_user == user.id)).scalars().all()  
-    latest_votes_for_chart = {} # dict na najnowsze głosy
-    for vote in votes:
-        if vote.chart_id not in latest_votes_for_chart or vote.revision_number > latest_votes_for_chart[vote.chart_id].revision_number: # jeżeli jeszcze nie ma głosu albo głos w aktualnej pętli jest nowszy...
-            latest_votes_for_chart[vote.chart_id] = vote # zapisujemy głos z aktualnej pętli
-    
-    # tworzenie listy wykresów i przypisanie do nich głosów użytkownika
+    # NEW CODE
+
     chart_to_display = []
     for chart in charts:
-        requester_vote = latest_votes_for_chart.get(chart.id, None) 
-        if requester_vote is not None:
-            requester_vote = requester_vote.user_vote
-        else:
-            requester_vote = None
+        # Getting the number of timespans for each current chart
+        timespans_for_chart = db.session.execute(
+            sa.select(Model_Timespans).where(
+                Model_Timespans.chart_id == chart.id)).scalars().all()
+        # Fetch all votes for the current chart
+        votes_for_chart = db.session.execute(
+            sa.select(Vote)
+            .where(Vote.chart_id == chart.id, Vote.interacting_user == user.id)
+        ).scalars().all()
+        # Get the latest votes for each timespan (fragment) in the chart
+        latest_votes = {}
+        for vote in votes_for_chart:
+            if vote.timespan_id not in latest_votes or vote.revision_number > latest_votes[vote.timespan_id].revision_number:
+                latest_votes[vote.timespan_id] = vote
+        # 
+        total_timespans = len(timespans_for_chart)
+        voted_timespans = len(latest_votes)
+
+        # Append chart info with "x out of y" data
         chart_to_display.append({
             "chart_id": chart.id,
-            "requester_vote": requester_vote
+            "votes_summary": f"{voted_timespans} out of {total_timespans}",
+            "color_status": "light-theme" if voted_timespans == total_timespans else "dark-theme" if voted_timespans > 0 else "grey-theme"
         })
 
     ## wywoływanie numeru ostatniego wykresu : 
