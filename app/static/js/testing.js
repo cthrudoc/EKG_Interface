@@ -256,9 +256,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td colspan="4">
                         <p>${timespan.model_proposition}</p>
                         <div >
-                            <button class="button toggle-button grey-theme vote-accurate" data_vote="true">Button 1</button>
-                            <button class="button toggle-button grey-theme vote-inaccurate" data_vote="false">Button 2</button>
-                            <button class="button toggle-button grey-theme vote-comment" data_vote="false">Button 3</button>
+                            <button class="button toggle-button grey-theme vote-accurate" data_vote="true" button-number="1">Button 1</button>
+                            <button class="button toggle-button grey-theme vote-inaccurate" data_vote="false" button-number="2">Button 2</button>
+                            <button class="button toggle-button grey-theme vote-comment" data_vote="false" button-number="3">Button 3</button>
                         </div>
                         <p class='comment-feedback'></p>
                         <input type="text" class="unfolded-text comment-feedback" placeholder="Enter text here">
@@ -267,33 +267,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
                 timespanTableBody.appendChild(unfoldedRow);
 
-                // New Code: Pre-fill data for timespans
-                if (timespan.user_vote !== undefined) {
-                    // Locate buttons in the current unfoldedRow
-                    const accurateButton = unfoldedRow.querySelector('.vote-accurate');
-                    const inaccurateButton = unfoldedRow.querySelector('.vote-inaccurate');
-                    const commentButton = unfoldedRow.querySelector('.vote-comment');
-                    
-                    // Pre-fill the vote button
-                    if (timespan.user_vote === "1" && accurateButton) {
-                        accurateButton.classList.remove('grey-theme');
-                        accurateButton.classList.add('dark-theme');
-                        accurateButton.setAttribute('data-toggle', 'true');
-                    } else if (timespan.user_vote === "0" && inaccurateButton) {
-                        inaccurateButton.classList.remove('grey-theme');
-                        inaccurateButton.classList.add('dark-theme');
-                        inaccurateButton.setAttribute('data-toggle', 'true');
-                    } else if (commentButton) {
-                        commentButton.classList.remove('grey-theme');
-                        commentButton.classList.add('dark-theme');
-                        commentButton.setAttribute('data-toggle', 'true');
-                    }
+                // Pre-fill data for timespans
 
-                    // Pre-fill the comment box
-                    const commentBox = unfoldedRow.querySelector('.unfolded-text.comment-feedback');
-                    if (commentBox) {
-                        commentBox.value = timespan.user_comment || '';
+                if (timespan.user_vote !== undefined && timespan.button_number !== undefined) {
+                    const row = document.querySelector(`[data-timespan-id="${timespan.timespan_id}"]`);
+                    if (row) {
+                        // Pre-fill vote button based on button_number
+                        const buttonToHighlight = unfoldedRow.querySelector(`.toggle-button[button-number="${timespan.button_number}"]`);
+                        if (buttonToHighlight) {
+                            buttonToHighlight.classList.remove('grey-theme');
+                            buttonToHighlight.classList.add('light-theme');
+                            console.log(`[Pre-fill] Highlighted button ${timespan.button_number} for timespan ID: ${timespan.timespan_id}`);
+                        } else {
+                            console.error(`[Pre-fill] Button not found for button_number: ${timespan.button_number}`);
+                        }
+                        // Pre-fill the comment box
+                        const commentBox = row.querySelector('.unfolded-text.comment-feedback');
+                        if (commentBox) {
+                            console.log(`[Pre-fill] Found comment box for timespan ID: ${timespan.timespan_id}`);
+                            commentBox.value = timespan.user_comment || '';
+                        } else {
+                            console.warn(`[Pre-fill] Comment box not found for timespan ID: ${timespan.timespan_id}`);
+                        }
+                    } else {
+                        console.warn(`[Pre-fill] Row not found for timespan ID: ${timespan.timespan_id}`);
                     }
+                } else {
+                    console.warn(`[Pre-fill] Missing user_vote or button_number for timespan ID: ${timespan.timespan_id}`);
                 }
                 
                 // Handle row unfold action (toggle + to - and show/hide content)
@@ -372,10 +372,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     const payload = {
                         timespan_id: unfoldedRow.getAttribute('data-timespan-id'),
                         user_vote: activeButton.getAttribute('data-vote') === 'true',
+                        button_number: activeButton.getAttribute('button-number'),
                         user_comment: comment,
                         chart_id : chartId
                     };
-                    // console.log('[wykres.js][submit-vote] Payload timespan ID : ', unfoldedRow.getAttribute('data-timespan-id')) // [DEBUG] 
+                    console.log('[wykres.js][submit-vote] Payload button-number : ', activeButton.getAttribute('button-number')) // [DEBUG] 
                 
                     // Submit vote via fetch
                     fetch('/api/submit_vote', {

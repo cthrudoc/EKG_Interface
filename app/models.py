@@ -64,6 +64,7 @@ class Vote(db.Model):
     revision_number: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=False)
     user_comment: so.Mapped[str] = so.mapped_column(sa.String, nullable=True)  # Added user_comment
     timespan_id: so.Mapped[int] = so.mapped_column(sa.Integer, sa.ForeignKey('model__timespans.id'), nullable=True)
+    button_number: so.Mapped[int] = so.mapped_column(sa.Integer)
 
     interacter: so.Mapped[User] = so.relationship(back_populates='user_votes')
     chart: so.Mapped["Chart"] = so.relationship(back_populates='chart_votes')

@@ -187,7 +187,6 @@ def user(username):
     next_page = page + 1 if page*per_page < total_charts else None 
     prev_page = page - 1 if page >1 else None # jeżeli strona to 1 to nie wyświetlamy strony "zero"
 
-    # NEW CODE
 
     chart_to_display = []
     for chart in charts:
@@ -291,7 +290,8 @@ def api_wykres():
             "end_time": ts.model_timespan_end,
             "model_proposition": ts.model_proposition,
             "user_vote": vote.user_vote if vote else None,
-            "user_comment": vote.user_comment if vote else None
+            "user_comment": vote.user_comment if vote else None,
+            "button_number": vote.button_number if vote else None
         })
 
     ## Initial timespan from which the first chart will be drawn 
@@ -369,6 +369,11 @@ def submit_vote():
     user_comment = data.get('user_comment')
     timespan_id = int(data.get('timespan_id'))
     chart_id = int(data['chart_id'])
+    button_number = data.get('button_number')
+    print(button_number)
+    if button_number is None:
+        return jsonify({"error": "button_number is required"}), 400
+    button_number = int(button_number)
     print(f'[routes.py][/api/submit_vote] pythonified data : user_vote : {user_vote}, timespan_id : {timespan_id}')
 
     if user_vote is None or not timespan_id:
@@ -393,7 +398,8 @@ def submit_vote():
         chart_id=chart_id,  
         user_vote=user_vote,
         user_comment=user_comment,
-        revision_number=new_revision_number
+        revision_number=new_revision_number,
+        button_number = button_number
     )
 
     # Save to the database
