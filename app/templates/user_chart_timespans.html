@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<table>
+    <caption>Timespans for chart {{ chart_id }}</caption>
+    <thead>
+        <tr>
+            <th scope="col">Timespan ID</th>
+            <th scope="col">Revisions</th>
+            <th scope="col">Vote</th>
+            <th scope="col">Revision number</th>
+            <th scope="col">Date</th>
+            <th scope="col">Comment</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for timespan in timespans_data %}
+        <tr>
+            <td>{{ timespan.timespan_id }}</td>
+            <td>{{ timespan.votes_for_timespan }}</td>
+            <td>{{ timespan.latest_vote_value }}</td>
+            <td>{{ timespan.latest_vote_revision_number }}</td>
+            <td>{{ timespan.latest_vote_time }}</td>
+            <td>{{ timespan.latest_vote_user_comment }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    {% if prev_page %}
+        <a href="{{ url_for('user_chart_timespans_list', user_id=user_id, chart_id=chart_id, page=prev_page) }}">Previous</a>
+    {% endif %}
+    
+    <span>Page {{ current_page }} of {{ total_pages }}</span>
+    
+    {% if next_page %}
+        <a href="{{ url_for('user_chart_timespans_list', user_id=user_id, chart_id=chart_id, page=next_page) }}">Next</a>
+    {% endif %}
+</div>
+
+<a href="{{ url_for('user', user_id=user_id) }}">Back to profile </a>
+{% endblock %}

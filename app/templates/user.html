@@ -28,7 +28,7 @@
                     </th>
                     <td class="item-col" >{{ chart.votes_summary }}</td>
                     <td class="item-col">
-                        <a href="{{ url_for('index') }}" class='square dark-theme'>
+                        <a href="{{ url_for('user_chart_timespans_list', user_id=user_id, chart_id=chart.chart_id) }}" class='square dark-theme'>
                             >
                         </a>
                     </td>

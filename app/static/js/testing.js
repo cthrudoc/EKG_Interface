@@ -277,14 +277,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (buttonToHighlight) {
                             buttonToHighlight.classList.remove('grey-theme');
                             buttonToHighlight.classList.add('light-theme');
-                            console.log(`[Pre-fill] Highlighted button ${timespan.button_number} for timespan ID: ${timespan.timespan_id}`);
                         } else {
                             console.error(`[Pre-fill] Button not found for button_number: ${timespan.button_number}`);
                         }
                         // Pre-fill the comment box
                         const commentBox = row.querySelector('.unfolded-text.comment-feedback');
                         if (commentBox) {
-                            console.log(`[Pre-fill] Found comment box for timespan ID: ${timespan.timespan_id}`);
                             commentBox.value = timespan.user_comment || '';
                         } else {
                             console.warn(`[Pre-fill] Comment box not found for timespan ID: ${timespan.timespan_id}`);

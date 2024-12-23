@@ -219,7 +219,7 @@ def user(user_id):
     last_chart = user.last_chart
 
     return render_template(
-        'user.html', user=user, 
+        'user.html', user=user, user_id = user_id , 
         chart_data=chart_to_display , last_chart = last_chart , 
         next_page = next_page , prev_page = prev_page , total_pages = total_pages , current_page = page 
         )
@@ -228,7 +228,69 @@ def user(user_id):
 @login_required
 @admin_prohibited
 def user_chart_timespans_list(user_id, chart_id):
-    timespans = db.session.execute(sa.select(Model_Timespans).where(Model_Timespans.chart_id == chart_id))
+
+    ## Pagination 
+
+    page = request.args.get( 'page' , 1 , type = int )
+    per_page = 10 
+    offset = (page - 1) * per_page
+    timespans = db.session.execute(
+        sa.select(Model_Timespans)
+        .where(Model_Timespans.chart_id == chart_id)
+        .offset(offset)
+        .limit(per_page)
+    )
+    total_timespans = db.session.query(Model_Timespans).filter(Model_Timespans.chart_id == chart_id).count()
+
+    total_pages = (total_timespans-1) // per_page + 1
+
+    next_page = page + 1 if page*per_page < total_timespans else None 
+    prev_page = page -1 if page >1 else None
+
+
+    ## Table of timespans
+    timespans_data = []
+    # Get timespan's latest vote, and the number of all revisions
+    for timespan in timespans:
+        timespan_id = timespan.Model_Timespans.id
+        # Get the number of all revisions 
+        votes_for_timespan = db.session.execute(
+            sa.select(Vote).where(
+                Vote.timespan_id == timespan_id, 
+                Vote.interacting_user == user_id
+            )
+        )
+        votes_for_timespan_count = len(votes_for_timespan.scalars().all())
+        # Get timespan's latest vote
+        latest_vote = db.session.execute(
+                sa.select(Vote)
+                .where(Vote.interacting_user == current_user.id, Vote.timespan_id == timespan_id)
+                .order_by(Vote.revision_number.desc())
+            ).scalars().first()
+        latest_vote_value_dict = {
+            1 : "Cardiomyopathic" , 
+            2 : "Non-cardiomyopathic" , 
+            3 : "I don't know / Other"
+        }
+        
+        timespans_data.append({
+        'timespan_id': timespan_id,
+        'votes_for_timespan': votes_for_timespan_count,
+        'latest_vote_value': latest_vote_value_dict.get(latest_vote.user_vote, "Unknown") if latest_vote else "Unknown",
+        'latest_vote_time': latest_vote.vote_time if latest_vote else None,
+        'latest_vote_revision_number': latest_vote.revision_number if latest_vote else None,
+        'latest_vote_user_comment': latest_vote.user_comment if latest_vote else None,
+    })
+    print(f"[DEBUG] Timespan loop done. Data : {timespans_data}")
+        
+    return render_template(
+        'user_chart_timespans.html', 
+        timespans_data = timespans_data, 
+        next_page = next_page , prev_page = prev_page , total_pages = total_pages , current_page = page
+    )
+    
+
+
 
 @app.route('/wykres', methods=['GET','POST'])
 @login_required
@@ -385,8 +447,6 @@ def submit_vote():
     if user_vote is None or not timespan_id:
         print('[routes.py][/api/submit_vote] not user_vote or not timespan_id')
         return jsonify({"success": False, "error": "Invalid data"}), 400
-
-    # [TODO][BUG] below this point in this route, only untested bullshit
 
     # Fetch the latest revision number for this timespan and user
     latest_vote = db.session.execute(
