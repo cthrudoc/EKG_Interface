@@ -1,10 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Votes for Timespan {{ timespan_id }}</h1>
 
 <table>
-    <caption>Votes for Timespan {{ timespan_id }}</caption>
     <thead>
         <tr>
             <th class="item-col">Vote ID</th>
@@ -25,17 +23,18 @@
     </tbody>
 </table>
 
-<div class="pagination">
+<div class="navbar">
+    <a class="nav-item" href="{{ url_for('user_chart_timespans_list', user_id=current_user.id, chart_id=chart_id) }}">Back </a>
+
     {% if prev_page %}
-        <a href="{{ url_for('user_timespan_votes', timespan_id=timespan_id, page=prev_page) }}">Previous</a>
+        <a class="nav-item" href="{{ url_for('user_timespan_votes', timespan_id=timespan_id, page=prev_page) }}">Previous</a>
     {% endif %}
     
-    <span>Page {{ current_page }} of {{ total_pages }}</span>
+    <span class="nav-item">Page {{ current_page }} of {{ total_pages }}</span>
     
     {% if next_page %}
-        <a href="{{ url_for('user_timespan_votes', timespan_id=timespan_id, page=next_page) }}">Next</a>
+        <a class="nav-item" href="{{ url_for('user_timespan_votes', timespan_id=timespan_id, page=next_page) }}">Next</a>
     {% endif %}
 </div>
 
-<a href="{{ url_for('user_chart_timespans_list', user_id=current_user.id, chart_id=chart_id) }}">Back to Timespans</a>
 {% endblock %}

@@ -17,11 +17,15 @@
         {% for timespan in timespans_data %}
         <tr>
             <td>
-                <a href="{{ url_for('user_timespan_votes', timespan_id=timespan.timespan_id) }}" class="square dark-theme">
+                <a>
                     {{ timespan.timespan_id }}
                 </a>
             </td>
-            <td>{{ timespan.votes_for_timespan }}</td>
+            <td>
+                <a href="{{ url_for('user_timespan_votes', timespan_id=timespan.timespan_id) }}" class="square dark-theme">
+                    {{ timespan.votes_for_timespan }}
+                </a>
+            </td>
             <td>{{ timespan.latest_vote_value }}</td>
             <td>{{ timespan.latest_vote_revision_number }}</td>
             <td>{{ timespan.latest_vote_time }}</td>

@@ -9,34 +9,69 @@
     </table>
     -->
     <!-- Wyświetlanie wykresów i głosów użytkownika na nie -->
-    <table>
-        <thead>
-            <tr>
-            <th class="item_col">Chart ID</th>
-            <th class="item_col">Votes</th>
-            <th class="item_col">Details</th>
-            <th>[PLACEHOLDER]</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for chart in chart_data %}
-                <tr>
-                    <th class="item-col">
-                        <a href="{{ url_for('wykres', chart_id=chart.chart_id) }}" class="square {{chart.color_status}}">
-                            {{ chart.chart_id }}
-                        </a>
-                    </th>
-                    <td class="item-col" >{{ chart.votes_summary }}</td>
-                    <td class="item-col">
-                        <a href="{{ url_for('user_chart_timespans_list', user_id=user_id, chart_id=chart.chart_id) }}" class='square dark-theme'>
-                            >
-                        </a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
+    <div class="progress-bar-container">
+        <div class="progress-bar" style="width: 50%;"></div> <!-- Placeholder percentage -->
+    </div>
+    <div class="table-container">
+        <div class="table-column">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="item_col">Chart ID</th>
+                        <th class="item_col">Votes</th>
+                        <th class="item_col">Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for chart in chart_data[0:chart_data|length//2] %}
+                        <tr>
+                            <th class="item-col">
+                                <a href="{{ url_for('wykres', chart_id=chart.chart_id) }}" class="square {{chart.color_status}}">
+                                    {{ chart.chart_id }}
+                                </a>
+                            </th>
+                            <td class="item-col">{{ chart.votes_summary }}</td>
+                            <td class="item-col">
+                                <a href="{{ url_for('user_chart_timespans_list', user_id=user_id, chart_id=chart.chart_id) }}" class='square dark-theme'>
+                                    >
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="table-column">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="item_col">Chart ID</th>
+                        <th class="item_col">Votes</th>
+                        <th class="item_col">Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for chart in chart_data[chart_data|length//2:] %}
+                        <tr>
+                            <th class="item-col">
+                                <a href="{{ url_for('wykres', chart_id=chart.chart_id) }}" class="square {{chart.color_status}}">
+                                    {{ chart.chart_id }}
+                                </a>
+                            </th>
+                            <td class="item-col">{{ chart.votes_summary }}</td>
+                            <td class="item-col">
+                                <a href="{{ url_for('user_chart_timespans_list', user_id=user_id, chart_id=chart.chart_id) }}" class='square dark-theme'>
+                                    >
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    
     <div class="navbar">
         {% if prev_page %}
             <a class="nav-item" href = "{{ url_for('user', user_id=user.id , page=prev_page ) }}">Previous</a>

@@ -14,6 +14,7 @@ import h5py
 import numpy
 import requests
 import json
+from datetime import datetime
 
 
 
@@ -177,7 +178,7 @@ def user(user_id):
     # paginacja
 
     page = request.args.get( 'page' , 1 , type = int )
-    per_page = 10 
+    per_page = 20 
     offset = (page - 1) * per_page
     charts = db.session.execute(sa.select(Chart).offset(offset).limit(per_page)).scalars().all() # wczytywanie określonej liczby głosów 
 
@@ -277,7 +278,7 @@ def user_chart_timespans_list(user_id, chart_id):
         'timespan_id': timespan_id,
         'votes_for_timespan': votes_for_timespan_count,
         'latest_vote_value': latest_vote_value_dict.get(latest_vote.user_vote, "Unknown") if latest_vote else "Unknown",
-        'latest_vote_time': latest_vote.vote_time if latest_vote else None,
+        'latest_vote_time': timeformat(latest_vote.vote_time) if latest_vote else None,
         'latest_vote_revision_number': latest_vote.revision_number if latest_vote else None,
         'latest_vote_user_comment': latest_vote.user_comment if latest_vote else None,
     })
