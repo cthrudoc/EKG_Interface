@@ -83,7 +83,7 @@ def index(): # index aktualnie nie ma funkcji, wiec przekierowuje do domyślnych
     if current_user.is_authenticated: 
         if current_user.is_admin == True: 
             return redirect(url_for('admin')) 
-        return redirect(url_for('user', username=current_user.username)) 
+        return redirect(url_for('user', user_id=current_user.id)) 
     return render_template('index.html', title='Home') 
 
 
@@ -92,7 +92,7 @@ def login():
     if current_user.is_authenticated:
         if current_user.is_admin == True:
             return redirect(url_for('admin'))
-        return redirect(url_for('user', username=current_user.username))
+        return redirect(url_for('user', user_id=current_user.id))
     form = LoginForm()
     if form.validate_on_submit():
         user = db.session.scalar(
@@ -166,12 +166,12 @@ def edit_profile():
                            form=form)
 
 
-@app.route('/user/<username>')
+@app.route('/user/<user_id>')
 @login_required
 @admin_prohibited
-def user(username):
+def user(user_id):
     user = db.first_or_404(sa.select(User).where(User.id == current_user.id))
-    username = user.username
+    user_id = user.id
 
     ## wyświetlanie listy wykresów i głosy użytkownika 
     # paginacja
@@ -223,6 +223,12 @@ def user(username):
         chart_data=chart_to_display , last_chart = last_chart , 
         next_page = next_page , prev_page = prev_page , total_pages = total_pages , current_page = page 
         )
+
+@app.route('/user/<user_id>/<chart_id>')
+@login_required
+@admin_prohibited
+def user_chart_timespans_list(user_id, chart_id):
+    timespans = db.session.execute(sa.select(Model_Timespans).where(Model_Timespans.chart_id == chart_id))
 
 @app.route('/wykres', methods=['GET','POST'])
 @login_required

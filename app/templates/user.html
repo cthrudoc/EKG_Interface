@@ -12,9 +12,10 @@
     <table>
         <thead>
             <tr>
-            <th class="item_col">ID wykresu</th>
-            <th class="item_col">Głos</th>
-            <th>Komentarz</th>
+            <th class="item_col">Chart ID</th>
+            <th class="item_col">Votes</th>
+            <th class="item_col">Details</th>
+            <th>[PLACEHOLDER]</th>
             </tr>
         </thead>
         <tbody>
@@ -26,6 +27,11 @@
                         </a>
                     </th>
                     <td class="item-col" >{{ chart.votes_summary }}</td>
+                    <td class="item-col">
+                        <a href="{{ url_for('index') }}" class='square dark-theme'>
+                            >
+                        </a>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -33,7 +39,7 @@
 
     <div class="navbar">
         {% if prev_page %}
-            <a class="nav-item" href = "{{ url_for('user', username=user.username , page=prev_page ) }}">Previous</a>
+            <a class="nav-item" href = "{{ url_for('user', user_id=user.id , page=prev_page ) }}">Previous</a>
         {% endif %}
         <span class="nav-item">
             Page {{ current_page }} of {{ total_pages }}
@@ -41,7 +47,7 @@
         
 
         {% if next_page %}
-            <a class="nav-item" href="{{ url_for('user', username=user.username , page=next_page ) }}">Next</a>
+            <a class="nav-item" href="{{ url_for('user', user_id=user.id , page=next_page ) }}">Next</a>
         {% endif %}
     </div>
 
