@@ -3,21 +3,24 @@
 {% block content %}
 
 <table>
-    <caption>Timespans for chart {{ chart_id }}</caption>
     <thead>
         <tr>
-            <th scope="col">Timespan ID</th>
-            <th scope="col">Revisions</th>
-            <th scope="col">Vote</th>
-            <th scope="col">Revision number</th>
-            <th scope="col">Date</th>
-            <th scope="col">Comment</th>
+            <th class="item-col">Timespan ID</th>
+            <th class="item-col">Revisions</th>
+            <th class="item-col">Vote</th>
+            <th class="item-col">Rev. number</th>
+            <th class="item-col">Date</th>
+            <th >Comment</th>
         </tr>
     </thead>
     <tbody>
         {% for timespan in timespans_data %}
         <tr>
-            <td>{{ timespan.timespan_id }}</td>
+            <td>
+                <a href="{{ url_for('user_timespan_votes', timespan_id=timespan.timespan_id) }}" class="square dark-theme">
+                    {{ timespan.timespan_id }}
+                </a>
+            </td>
             <td>{{ timespan.votes_for_timespan }}</td>
             <td>{{ timespan.latest_vote_value }}</td>
             <td>{{ timespan.latest_vote_revision_number }}</td>
@@ -28,16 +31,18 @@
     </tbody>
 </table>
 
-<div class="pagination">
+<div class="navbar">
     {% if prev_page %}
-        <a href="{{ url_for('user_chart_timespans_list', user_id=user_id, chart_id=chart_id, page=prev_page) }}">Previous</a>
+        <a class="nav-item" href="{{ url_for('user_chart_timespans_list', user_id=user_id, chart_id=chart_id, page=prev_page) }}">Previous</a>
     {% endif %}
     
-    <span>Page {{ current_page }} of {{ total_pages }}</span>
+    <span class="nav-item">Page {{ current_page }} of {{ total_pages }}</span>
     
     {% if next_page %}
-        <a href="{{ url_for('user_chart_timespans_list', user_id=user_id, chart_id=chart_id, page=next_page) }}">Next</a>
+        <a class="nav-item" href="{{ url_for('user_chart_timespans_list', user_id=user_id, chart_id=chart_id, page=next_page) }}">Next</a>
     {% endif %}
+
+
 </div>
 
 <a href="{{ url_for('user', user_id=user_id) }}">Back to profile </a>

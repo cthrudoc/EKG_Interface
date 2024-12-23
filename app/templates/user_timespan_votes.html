@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Votes for Timespan {{ timespan_id }}</h1>
+
+<table>
+    <caption>Votes for Timespan {{ timespan_id }}</caption>
+    <thead>
+        <tr>
+            <th class="item-col">Vote ID</th>
+            <th class="item-col">Revision Number</th>
+            <th class="item-col">Vote Value</th>
+            <th class="item-col">Comment</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for vote in votes_data %}
+        <tr>
+            <td>{{ vote.vote_id }}</td>
+            <td>{{ vote.revision_number }}</td>
+            <td>{{ vote.vote_value }}</td>
+            <td>{{ vote.user_comment }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    {% if prev_page %}
+        <a href="{{ url_for('user_timespan_votes', timespan_id=timespan_id, page=prev_page) }}">Previous</a>
+    {% endif %}
+    
+    <span>Page {{ current_page }} of {{ total_pages }}</span>
+    
+    {% if next_page %}
+        <a href="{{ url_for('user_timespan_votes', timespan_id=timespan_id, page=next_page) }}">Next</a>
+    {% endif %}
+</div>
+
+<a href="{{ url_for('user_chart_timespans_list', user_id=current_user.id, chart_id=chart_id) }}">Back to Timespans</a>
+{% endblock %}

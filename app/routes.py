@@ -108,7 +108,7 @@ def login():
 
         next_page = request.args.get('next')
         if not next_page or urlsplit(next_page).netloc != '':
-            next_page = url_for('admin') if user.is_admin else url_for('user', username=user.username)
+            next_page = url_for('admin') if user.is_admin else url_for('user', user_id=user.id)
         return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
 
@@ -281,14 +281,58 @@ def user_chart_timespans_list(user_id, chart_id):
         'latest_vote_revision_number': latest_vote.revision_number if latest_vote else None,
         'latest_vote_user_comment': latest_vote.user_comment if latest_vote else None,
     })
-    print(f"[DEBUG] Timespan loop done. Data : {timespans_data}")
+    # print(f"[DEBUG] Timespan loop done. Data : {timespans_data}")
         
     return render_template(
         'user_chart_timespans.html', 
         timespans_data = timespans_data, 
         next_page = next_page , prev_page = prev_page , total_pages = total_pages , current_page = page
     )
-    
+
+
+@app.route('/timespan/<int:timespan_id>/votes')
+@login_required
+@admin_prohibited
+def user_timespan_votes(timespan_id):
+    # Pagination
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+    offset = (page - 1) * per_page
+
+    # Fetch votes for the given timespan
+    votes = db.session.execute(
+        sa.select(Vote)
+        .where(Vote.timespan_id == timespan_id, Vote.interacting_user == current_user.id)
+        .offset(offset)
+        .limit(per_page)
+    ).scalars().all()
+
+    total_votes = db.session.query(Vote).filter(Vote.timespan_id == timespan_id, Vote.interacting_user == current_user.id).count()
+    total_pages = (total_votes - 1) // per_page + 1
+
+    next_page = page + 1 if page * per_page < total_votes else None
+    prev_page = page - 1 if page > 1 else None
+
+    # Prepare data for the table
+    votes_data = [
+        {
+            'vote_id': vote.id,
+            'revision_number': vote.revision_number,
+            'vote_value': vote.button_number,
+            'user_comment': vote.user_comment
+        }
+        for vote in votes
+    ]
+
+    return render_template(
+        'user_timespan_votes.html',
+        votes_data = votes_data,
+        timespan_id = timespan_id,
+        next_page = next_page,
+        prev_page = prev_page,
+        total_pages = total_pages,
+        current_page = page
+    )
 
 
 
