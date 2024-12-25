@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             b.classList.remove('dark-theme'); // Remove dark theme
                             b.classList.add('grey-theme');   // Apply grey theme
                             b.setAttribute('data-toggle', 'false'); // Reset data-toggle
-                            b.setAttribute('data-vote', 'false');  // Reset data-vote to false
+                            // b.setAttribute('data-vote', 'false');  // [BUG] pointless code, remove if for a couple versions nothing breaks
                             console.log('[wykres.js][.toggle-button] Changed buttons to grey.');
                         });
                 
@@ -333,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         button.classList.remove('grey-theme');
                         button.classList.add('dark-theme');
                         button.setAttribute('data-toggle', 'true'); // Mark as active
-                        button.setAttribute('data-vote', 'true'); // Set data-vote to true for clicked button
+                        // button.setAttribute('data-vote', 'true'); // [BUG] pointless code, remove if for a couple versions nothing breaks
                         console.log('[wykres.js][.toggle-button] Changed active button to dark.');
                     });
                 });

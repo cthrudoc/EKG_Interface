@@ -30,7 +30,12 @@
                                     {{ chart.chart_id }}
                                 </a>
                             </th>
-                            <td class="item-col">{{ chart.votes_summary }}</td>
+                            <td class="item-col">
+                                <div class="votes-progress-container">
+                                    <div class="votes-progress-bar" style="width: 60%;"></div> <!-- Placeholder percentage -->
+                                    <span>{{ chart.votes_summary }}</span>
+                                </div>
+                            </td>
                             <td class="item-col">
                                 <a href="{{ url_for('user_chart_timespans_list', user_id=user_id, chart_id=chart.chart_id) }}" class='square dark-theme'>
                                     >

@@ -268,16 +268,32 @@ def user_chart_timespans_list(user_id, chart_id):
                 .where(Vote.interacting_user == current_user.id, Vote.timespan_id == timespan_id)
                 .order_by(Vote.revision_number.desc())
             ).scalars().first()
-        latest_vote_value_dict = {
-            1 : "Cardiomyopathic" , 
-            2 : "Non-cardiomyopathic" , 
-            3 : "I don't know / Other"
-        }
+        print(latest_vote)
+        latest_vote_value = "Unknown"
+        if latest_vote:
+            try:
+                user_vote = int(latest_vote.button_number)  # Convert to integer
+                if user_vote == 1:
+                    latest_vote_value = "Cardiomyopathic"
+                elif user_vote == 2:
+                    latest_vote_value = "Non-cardiomyopathic"
+                elif user_vote == 3:
+                    latest_vote_value = "I don't know / Other"
+            except ValueError:
+                print("Invalid user_vote value:", latest_vote.user_vote)
+
+         
+        if latest_vote:
+            print(latest_vote.user_vote)
+            print(latest_vote_value)
+        else:
+            print('no latest vote')
+        #print(latest_vote_value_dict.get(latest_vote.user_vote, "Unknown"))
         
         timespans_data.append({
         'timespan_id': timespan_id,
         'votes_for_timespan': votes_for_timespan_count,
-        'latest_vote_value': latest_vote_value_dict.get(latest_vote.user_vote, "Unknown") if latest_vote else "Unknown",
+        'latest_vote_value': latest_vote_value,
         'latest_vote_time': timeformat(latest_vote.vote_time) if latest_vote else None,
         'latest_vote_revision_number': latest_vote.revision_number if latest_vote else None,
         'latest_vote_user_comment': latest_vote.user_comment if latest_vote else None,

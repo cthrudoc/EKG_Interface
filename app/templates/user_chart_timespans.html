@@ -36,6 +36,8 @@
 </table>
 
 <div class="navbar">
+    <a class="nav-item" href="{{ url_for('user', user_id=user_id) }}">Back </a>
+
     {% if prev_page %}
         <a class="nav-item" href="{{ url_for('user_chart_timespans_list', user_id=user_id, chart_id=chart_id, page=prev_page) }}">Previous</a>
     {% endif %}
@@ -49,5 +51,4 @@
 
 </div>
 
-<a href="{{ url_for('user', user_id=user_id) }}">Back to profile </a>
 {% endblock %}

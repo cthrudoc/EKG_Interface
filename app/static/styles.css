@@ -222,6 +222,34 @@ button:hover, .button:hover {
     height: 100%;
 }
 
+/* Text progress bar */
+.votes-progress-container {
+    position: relative;
+    background-color: #e0e0e0; /* Background color for the progress bar */
+    border-radius: 5px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
+}
+
+.votes-progress-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: #3E4C5E; 
+    border-radius: 0px;
+    z-index: 1; /* Place it behind the text */
+    transition: width 0.3s ease;
+}
+
+.votes-progress-container span {
+    position: relative;
+    z-index: 2; /* Text above the progress bar */
+    color: #fff; /* Text color, adjust if necessary */
+    font-weight: bold;
+}
 
 
 /* Chart display */
