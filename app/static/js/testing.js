@@ -256,9 +256,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td colspan="4">
                         <p>${timespan.model_proposition}</p>
                         <div >
-                            <button class="button toggle-button grey-theme vote-accurate" data_vote="true" button-number="1">Button 1</button>
-                            <button class="button toggle-button grey-theme vote-inaccurate" data_vote="false" button-number="2">Button 2</button>
-                            <button class="button toggle-button grey-theme vote-comment" data_vote="false" button-number="3">Button 3</button>
+                            <button class="button toggle-button grey-theme vote-accurate" data_vote="true" button-number="1">Cardiomyopathic</button>
+                            <button class="button toggle-button grey-theme vote-inaccurate" data_vote="false" button-number="2">Non-cardiomyopathic</button>
+                            <button class="button toggle-button grey-theme vote-comment" data_vote="false" button-number="3">Don't know / other</button>
                         </div>
                         <p class='comment-feedback'></p>
                         <input type="text" class="unfolded-text comment-feedback" placeholder="Enter text here">

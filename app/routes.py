@@ -174,11 +174,10 @@ def user(user_id):
     user = db.first_or_404(sa.select(User).where(User.id == current_user.id))
     user_id = user.id
 
-    ## wyświetlanie listy wykresów i głosy użytkownika 
-    # paginacja
+    ## paginacja
 
     page = request.args.get( 'page' , 1 , type = int )
-    per_page = 20 
+    per_page = 10 
     offset = (page - 1) * per_page
     charts = db.session.execute(sa.select(Chart).offset(offset).limit(per_page)).scalars().all() # wczytywanie określonej liczby głosów 
 
@@ -188,7 +187,30 @@ def user(user_id):
     next_page = page + 1 if page*per_page < total_charts else None 
     prev_page = page - 1 if page >1 else None # jeżeli strona to 1 to nie wyświetlamy strony "zero"
 
+    ## Counting percentages of completed timespans
+    all_timespans = db.session.execute(sa.select(Model_Timespans)).scalars().all() # All timespans for all charts
+    # Get all unique timespan IDs the user has voted on
+    voted_timespan_ids = db.session.execute(
+        sa.select(Vote.timespan_id)
+        .where(Vote.interacting_user == current_user.id)
+    ).scalars().all()
 
+    # Remove duplicates and count unique timespans
+    unique_voted_timespan_ids = set(voted_timespan_ids)  # Convert to set for uniqueness
+    voted_timespans_count = len(unique_voted_timespan_ids)
+
+    # Total number of timespans
+    total_timespans_count = len(all_timespans)
+
+    # Calculate the percentage of timespans the user has voted on
+    if total_timespans_count > 0:
+        percentage_voted = (voted_timespans_count / total_timespans_count) * 100
+    else:
+        percentage_voted = 0  # dividing using zero scares me 
+
+    print(f"[user(user_id)] Percentage of all timespans voted on : {percentage_voted}") # [DEBUG] 
+
+    ## wyświetlanie listy wykresów i głosy użytkownika 
     chart_to_display = []
     for chart in charts:
         # Getting the number of timespans for each current chart
@@ -221,7 +243,7 @@ def user(user_id):
 
     return render_template(
         'user.html', user=user, user_id = user_id , 
-        chart_data=chart_to_display , last_chart = last_chart , 
+        chart_data=chart_to_display , last_chart = last_chart , percentage_voted = percentage_voted , 
         next_page = next_page , prev_page = prev_page , total_pages = total_pages , current_page = page 
         )
 
