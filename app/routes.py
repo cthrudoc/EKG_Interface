@@ -235,7 +235,7 @@ def user(user_id):
         chart_to_display.append({
             "chart_id": chart.id,
             "votes_summary": f"{voted_timespans} out of {total_timespans}",
-            "color_status": "grey-theme" if total_timespans == 0 else "light-theme" if voted_timespans == total_timespans else "dark-theme" if voted_timespans > 0 else "grey-theme" ,
+            "color_status": "grey-theme" if total_timespans == 0 else "light-theme" if voted_timespans == total_timespans else "dark-theme" if voted_timespans > 0 else "grey-theme-act" ,
         })
 
     ## wywoływanie numeru ostatniego wykresu : 

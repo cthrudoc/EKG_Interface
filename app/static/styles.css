@@ -190,13 +190,24 @@ button:hover, .button:hover {
 }
 
 .grey-theme {
-    background-color: #84828f
+    background-color: #9997A2;
 }
 
 .grey-theme:hover{
     background-color: #777585;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
+
+.grey-theme-act {
+    background-color: #9997A2;
+    border: 2px dashed #35455a;
+}
+
+.grey-theme-act:hover{
+    background-color: #777585;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
 /* Dividing table in /user into two */
 .table-container {
     display: flex;
