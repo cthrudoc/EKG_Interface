@@ -22,7 +22,7 @@
                 </a>
             </td>
             <td>
-                <a href="{{ url_for('user_timespan_votes', timespan_id=timespan.timespan_id) }}" class="square dark-theme">
+                <a href="{{ url_for('user_timespan_votes', user_id=user_id , chart_id=chart_id , timespan_id=timespan.timespan_id) }}" class="square dark-theme">
                     {{ timespan.votes_for_timespan }}
                 </a>
             </td>

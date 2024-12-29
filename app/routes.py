@@ -235,7 +235,7 @@ def user(user_id):
         chart_to_display.append({
             "chart_id": chart.id,
             "votes_summary": f"{voted_timespans} out of {total_timespans}",
-            "color_status": "light-theme" if voted_timespans == total_timespans else "dark-theme" if voted_timespans > 0 else "grey-theme"
+            "color_status": "grey-theme" if total_timespans == 0 else "light-theme" if voted_timespans == total_timespans else "dark-theme" if voted_timespans > 0 else "grey-theme" ,
         })
 
     ## wywoływanie numeru ostatniego wykresu : 
@@ -304,13 +304,14 @@ def user_chart_timespans_list(user_id, chart_id):
             except ValueError:
                 print("Invalid user_vote value:", latest_vote.user_vote)
 
-         
+        ''' # [DEBUG]
         if latest_vote:
             print(latest_vote.user_vote)
             print(latest_vote_value)
         else:
             print('no latest vote')
-        #print(latest_vote_value_dict.get(latest_vote.user_vote, "Unknown"))
+        '''
+        # print(latest_vote_value_dict.get(latest_vote.user_vote, "Unknown"))
         
         timespans_data.append({
         'timespan_id': timespan_id,
@@ -324,15 +325,15 @@ def user_chart_timespans_list(user_id, chart_id):
         
     return render_template(
         'user_chart_timespans.html', 
-        timespans_data = timespans_data, 
+        timespans_data = timespans_data, user_id = user_id , chart_id = chart_id , 
         next_page = next_page , prev_page = prev_page , total_pages = total_pages , current_page = page
     )
 
 
-@app.route('/timespan/<int:timespan_id>/votes')
+@app.route('/user/<user_id>/<chart_id>/<int:timespan_id>/votes')
 @login_required
 @admin_prohibited
-def user_timespan_votes(timespan_id):
+def user_timespan_votes(user_id, chart_id, timespan_id):
     # Pagination
     page = request.args.get('page', 1, type=int)
     per_page = 10
@@ -346,19 +347,36 @@ def user_timespan_votes(timespan_id):
         .limit(per_page)
     ).scalars().all()
 
+    # Pagination
+
     total_votes = db.session.query(Vote).filter(Vote.timespan_id == timespan_id, Vote.interacting_user == current_user.id).count()
     total_pages = (total_votes - 1) // per_page + 1
 
     next_page = page + 1 if page * per_page < total_votes else None
     prev_page = page - 1 if page > 1 else None
 
+    # Translate button number to vote value 
+    def vote_assigner(vote_button_number):
+        try:
+            user_vote = int(vote_button_number)  # Convert to integer
+            if user_vote == 1:
+                vote_value = "Cardiomyopathic"
+            elif user_vote == 2:
+                vote_value = "Non-cardiomyopathic"
+            elif user_vote == 3:
+                vote_value = "I don't know / Other"
+        except ValueError:
+            print("Invalid user_vote value")
+        return vote_value
+
     # Prepare data for the table
     votes_data = [
         {
             'vote_id': vote.id,
             'revision_number': vote.revision_number,
-            'vote_value': vote.button_number,
-            'user_comment': vote.user_comment
+            'vote_value': vote_assigner(vote.button_number),
+            'user_comment': vote.user_comment, 
+            'vote_time' : timeformat(vote.vote_time)
         }
         for vote in votes
     ]
@@ -366,11 +384,8 @@ def user_timespan_votes(timespan_id):
     return render_template(
         'user_timespan_votes.html',
         votes_data = votes_data,
-        timespan_id = timespan_id,
-        next_page = next_page,
-        prev_page = prev_page,
-        total_pages = total_pages,
-        current_page = page
+        timespan_id = timespan_id, user_id = user_id , chart_id = chart_id , 
+        next_page = next_page, prev_page = prev_page, total_pages = total_pages, current_page = page
     )
 
 

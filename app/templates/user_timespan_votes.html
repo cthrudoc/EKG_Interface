@@ -6,15 +6,17 @@
     <thead>
         <tr>
             <th class="item-col">Vote ID</th>
-            <th class="item-col">Revision Number</th>
+            <th class="item-col">Vote time</th>
+            <th class="item-col">Rev. Number</th>
             <th class="item-col">Vote Value</th>
-            <th class="item-col">Comment</th>
+            <th >Comment</th>
         </tr>
     </thead>
     <tbody>
         {% for vote in votes_data %}
         <tr>
             <td>{{ vote.vote_id }}</td>
+            <td>{{ vote.vote_time }}</td>
             <td>{{ vote.revision_number }}</td>
             <td>{{ vote.vote_value }}</td>
             <td>{{ vote.user_comment }}</td>

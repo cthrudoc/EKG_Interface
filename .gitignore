@@ -9,3 +9,7 @@ app/EKGs/TestEKG_converted.h5
 app/static/testEKG.json
 
 ECG_Interface.code-workspace
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
