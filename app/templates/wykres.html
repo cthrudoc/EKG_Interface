@@ -2,56 +2,53 @@
 
 {% block content %}
 
-    <div id="chart-container" style="display: flex; width: 100%;">
-        <!-- Charts Section -->
-        <div id="charts" style="flex: 3; padding-right: 10px;">
-            <div id="tester1"></div>
-            <div id="tester2"></div>
-            <div id="tester3"></div>
-        </div>
-        <!-- [TODO] Toggle Button. Now redundant as I falied to implement it properly.
-        <div class="button-wrapper">
-        <button id="toggleButton" class="toggle-button">Collapse</button>
-        </div>
-        -->
-        <!-- Right Strip -->
-        <div class="right-strip-wrapper">
-            <div id="rightStrip" class="right-strip">
-                <div class="timespan-table-container">
-                    <!-- First Table -->
-                    <table id="timespanTable">
-                        <thead>
-                            <tr>
-                                <th>Index</th>
-                                <th>Start Time</th>
-                                <th>End Time</th>
-                                <th>
-                                    <button class="row-toggle square dark-theme">-</button>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody id="timespanTableBody" class="row-container">
-                            <!-- Rows will be added dynamically here -->
-                        </tbody>
-                    </table>
-                </div>
-                <!-- Pagination -->
-                <div class="pagination">
-                    {% if prev_chart_id %}
-                        <a href="{{ url_for('wykres', chart_id=prev_chart_id) }}" class="button">Poprzedni</a>
-                    {% else %}
-                        <span class="button disabled">Poprzedni</span>
-                    {% endif %}
-                    
-                    {% if next_chart_id %}
-                        <a href="{{ url_for('wykres', chart_id=next_chart_id) }}" class="button">Następny</a>
-                    {% else %}
-                        <span class="button disabled">Następny</span>
-                    {% endif %}
-                </div>
-            </div>
-        </div>  
+<div class="chart-container">
+    <!-- Toggle Button -->
+    <button id="toggleButtonStrip" class="toggle-button-strip">→</button>
+
+    <!-- Charts Section -->
+    <div id="charts">
+        <div id="tester1"></div>
+        <div id="tester2"></div>
+        <div id="tester3"></div>
     </div>
+
+    <!-- Right Strip -->
+    <div class="right-strip">
+        <!-- Table Container -->
+        <div class="timespan-table-container">
+            <table id="timespanTable">
+                <thead>
+                    <tr>
+                        <th>Index</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="timespanTableBody">
+                    <!-- Dynamic rows will be added here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            {% if prev_chart_id %}
+                <a href="{{ url_for('wykres', chart_id=prev_chart_id) }}" class="button">Previous</a>
+            {% else %}
+                <span class="button disabled">Previous</span>
+            {% endif %}
+
+            {% if next_chart_id %}
+                <a href="{{ url_for('wykres', chart_id=next_chart_id) }}" class="button">Next</a>
+            {% else %}
+                <span class="button disabled">Next</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
     <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/plotly.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/testing.js') }}"></script>

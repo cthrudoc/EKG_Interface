@@ -214,6 +214,39 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log("[wykres.js] Charts created successfully.");
 
             // TABLE TERRITORY STARTS HERE
+
+            // Handle strip toggle functionality
+            document.getElementById('toggleButtonStrip').addEventListener('click', function () {
+                const toggleButton = this;
+                const chartContainer = document.querySelector('.chart-container');
+                const charts = document.getElementById('charts');
+                const rightStrip = document.querySelector('.right-strip');
+
+                console.log("[wykres.js][toggleButton] Event listener click.")
+
+                // Check if the strip is visible
+                const isHidden = rightStrip.style.transform === 'translateX(100%)';
+
+                if (isHidden) {
+                    // Unfold the right strip
+                    rightStrip.style.transform = 'translateX(0)';
+                    rightStrip.style.opacity = '1';
+                    charts.style.flex = '4'; // Reset chart flex size
+                    console.log("[wykres.js][toggleButton] Unfolding")
+                } else {
+                    // Fold the right strip
+                    rightStrip.style.transform = 'translateX(100%)';
+                    rightStrip.style.opacity = '0';
+                    charts.style.flex = '5'; // Expand chart to full width
+                    console.log("[wykres.js][toggleButton] Folding")
+                }
+                allPlots.forEach(plot => Plotly.Plots.resize(plot));
+
+                // Add active class for animation
+                toggleButton.classList.toggle('active');
+            });
+
+            /* [TODO] Old collapsing functionality 
             // JavaScript for strip collapsing
             const toggleButton = document.getElementById('toggleButton');
             const rightStrip = document.getElementById('rightStrip');
@@ -227,6 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }, 500);
             });
+            */
 
             const timespanTableBody = document.getElementById('timespanTableBody');
 

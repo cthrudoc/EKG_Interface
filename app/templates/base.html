@@ -17,11 +17,6 @@
             <a class="nav-item" href="{{ url_for('wykres') }}">Chart</a>
             <a class="nav-item" href="{{ url_for('logout') }}">Logout</a>
             {% endif %}
-            {% if '/wykres' in request.full_path %}
-            <a class="nav-item right-allign" id="toggleButton" href="#">Toggle</a>
-            {% else %}
-            <a class="nav-item right-allign">Feedback</a>
-            {% endif %}
         </div>
         {% with messages = get_flashed_messages() %}
         {% if messages %}

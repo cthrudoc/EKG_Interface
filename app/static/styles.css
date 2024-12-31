@@ -17,7 +17,6 @@ body {
 /* Navigation Bar */
 .navbar {
     display: flex;
-    position: sticky;
     top: 0;   
     justify-content: flex-start; /* Align items to the left */
     background-color: #2C3D55; /* Dark blue background */
@@ -218,6 +217,14 @@ button:hover, .button:hover {
     width: 49%;
 }
 
+.strip {
+    height: 50px; 
+    background-color: #f0f0f0; /* Light gray color */
+    margin-bottom: 00px; /* Add spacing below the strip */
+    border: 0px solid #ccc; /* Optional border for visibility */
+    border-radius: 0px; /* Optional rounded corners */
+}
+
 /* Main progress bar code */
 .progress-bar-container {
     background-color: #e0e0e0;
@@ -263,93 +270,83 @@ button:hover, .button:hover {
 }
 
 
-/* Chart display */
+/* Main container for layout */
 .chart-container {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-    width: 100%; /* Take full width of the window */
-    height: 100vh; /* Full height of the viewport */
     display: flex;
+    flex: 1 1 auto ;
     position: relative;
+    background-color: white;
     width: 100%;
-    height: auto;
-    overflow: visible;
+    height: 100vh; /* Full viewport height */
+    margin: 0;
+    overflow: hidden; /* Prevent scrollbars when elements are animated */
 }
 
-/* [TODO] Shit gets fucked without it, idk why???????*/
-#chart-container {
-    width: 100%;
-    height: auto;
-    overflow: visible;
-}
-
-/* Charts section dynamically adjusts to account for the strip */
+/* Charts section */
 #charts {
-    flex: 1;
-    overflow: hidden;
-    transition: margin-right 0.5s ease-in-out, width 0.5s ease-in-out; /* Smooth resizing */
-    margin-right: 0px; /* Reserve space for the right strip */
+    flex: 4; /* Default allocation */
+    padding: 5px;
+    box-sizing: border-box;
+    width: 100% ;
+    transition: all 0.3s ease; /* Smooth resizing when toggling */
+    overflow-y: auto; /* Vertical scrolling for charts */
 }
 
-/* Right strip */
+/* Right strip section */
 .right-strip {
-    position: sticky; 
-    top: 0;
-    height: 100vh;
-    width: 300px; /* Fixed width for the strip */
-    background-color: #f4f4f4; /* Optional: Light background for contrast */
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); /* Visual separation */
-    display: flex;
-    overflow-y: auto;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Ensure it appears above other elements */
-    transition: transform 0.5s ease, clip-path 0.5s ease; /* Smooth slide animation */
-    clip-path: inset(0 0 0 0); /* Initially fully visible */
-}
-
-.right-strip.collapsed {
-    transform: translateX(100%); /* Slide it to the right */
-}
-
-.right-strip-wrapper {
-    position: relative;
     flex: 1;
-    width: 300px;
-    overflow: hidden; /* Ensures content slides out of view */
-    height: 100vh;
-}
-
-/* Sticky Table Section */
-#timespan-table-container {
-    flex: 1;
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
+    background-color: #f4f4f4;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
-    background-color: white;
-    border: 1px solid #ddd;
-    padding: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin-left: 10px;
+    transition: all 0.3s ease; /* Smooth animation for folding/unfolding */
+    z-index: 1000;
+    padding: 0px;
+    min-width: 300px;
+    max-width: 100%;
+    overflow-x: auto;
+    box-sizing: border-box;
 }
 
+/* Toggle Button */
+.toggle-button-strip {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2000; /* Above all other elements */
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.toggle-button-strip:hover {
+    background-color: #0056b3;
+}
+
+.toggle-button-strip.active {
+    transform: rotate(180deg); /* Rotate arrow to indicate action */
+}
+
+/* Table container inside the right strip */
+.timespan-table-container {
+    margin-bottom: 10px;
+    overflow-y: auto;
+    flex-grow: 1; /* Allow it to take remaining vertical space */
+}
+
+/* Table styling */
 #timespanTable {
     border-collapse: collapse;
-}
-
-#timespanTable thead {
-    background-color: #6a687a;
-    color: white;
+    width: 100%;
 }
 
 #timespanTable th, #timespanTable td {
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
+    padding: 8px;
+    border: 1px solid #ddd;
     text-align: left;
 }
 
