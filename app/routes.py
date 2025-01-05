@@ -204,7 +204,7 @@ def user(user_id):
 
     # Calculate the percentage of timespans the user has voted on
     if total_timespans_count > 0:
-        percentage_voted = (voted_timespans_count / total_timespans_count) * 100
+        percentage_voted = round((voted_timespans_count / total_timespans_count) * 100 , 1)
     else:
         percentage_voted = 0  # dividing using zero scares me 
 
