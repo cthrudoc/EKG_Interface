@@ -9,7 +9,7 @@ body {
     color: #536271; /* Primary text color */
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 0px;
     padding-top: 20px;
     background-color: #35455a; 
 }
@@ -131,7 +131,7 @@ button:hover, .button:hover {
 }
 
 /* Responsive design */
-@media (max-width: 768px) {
+@media (max-width: 700px) {
     .navbar {
         flex-direction: column;
     }
@@ -145,7 +145,22 @@ button:hover, .button:hover {
 
     table {
         font-size: 14px;
+    } 
+
+    .strip-container {
+        flex-direction: column; /* Changed to ensure strips stack vertically on smaller screens */
     }
+
+    .strip {
+        flex: 100%; /* Stacks strips vertically, full width */
+    }
+    .table-container {
+        flex-direction: column;
+    }
+    .table-column {
+        flex: 1 1 auto;
+    }
+
 }
 
 .button, .square {
@@ -211,34 +226,52 @@ button:hover, .button:hover {
 .table-container {
     display: flex;
     justify-content: space-between;
+    flex: wrap;
 }
 
 .table-column {
     width: 49%;
 }
 
-.strip {
-    height: 50px; 
-    background-color: #f0f0f0; /* Light gray color */
-    margin-bottom: 00px; /* Add spacing below the strip */
-    border: 0px solid #ccc; /* Optional border for visibility */
-    border-radius: 0px; /* Optional rounded corners */
+.strip-container {
+    display: flex; /* Flexbox layout */
+    flex-wrap: wrap; /* Allow stacking on smaller screens */
+    gap: 10px; /* Add 10px space between strips */
+    width: 100%; /* Full width */
+    margin-bottom: 10px; /* Optional: spacing below the container */
 }
 
-/* Main progress bar code */
+.strip {
+    flex: 1; /* All strips take equal width */
+    height: 80px;
+    padding: 10px;
+    box-sizing: border-box;
+    display: flex; /* Flexbox for centering content */
+    flex-direction: column;
+    justify-content: center; /* Vertical centering */
+    align-items: center; /* Horizontal centering */
+    background-color: #ffffff; /* White background, matching the table below */
+    border: 1px solid #ddd; /* Optional: border for better visual separation */
+    border-radius: 5px; /* Optional: slight rounding of corners */
+}
+
 .progress-bar-container {
-    background-color: #e0e0e0;
-    border-radius: 5px;
-    height: 20px;
-    width: 100%;
-    margin: 10px 0;
-    position: relative;
+    width: 100%; /* Full width of the strip */
+    height: 20px; /* Height of the progress bar */
+    background-color: #f3f3f3; /* Light gray background */
+    border-radius: 10px; /* Rounded corners */
+    overflow: hidden; /* Clip overflowing content */
+    margin-bottom: 10px;
 }
 
 .progress-bar {
-    background-color: #E6898F;
-    height: 100%;
+    height: 100%; /* Fill container height */
+    background-color: #007bff; /* Progress bar color */
+    border-radius: 10px 0 0 10px; /* Rounded corners on the left */
+    transition: width 0.3s ease; /* Smooth progress change */
+    transition: width 0.3s ease; /* Smooth progress change */
 }
+
 
 /* Text progress bar */
 .votes-progress-container {
@@ -285,7 +318,7 @@ button:hover, .button:hover {
 /* Charts section */
 #charts {
     flex: 4; /* Default allocation */
-    padding: 5px;
+    padding: 0px;
     box-sizing: border-box;
     width: 100% ;
     transition: all 0.3s ease; /* Smooth resizing when toggling */

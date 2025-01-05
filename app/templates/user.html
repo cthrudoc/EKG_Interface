@@ -9,16 +9,22 @@
     </table>
     -->
     <!-- Wyświetlanie wykresów i głosów użytkownika na nie -->
-    <div class="progress-bar-container">
-        <div class="progress-bar" id="progress-bar"></div> <!-- Ridiculous AI generated workaround to avoid my IDE's error detection of normal Jinja code -->
-            <script>
-                document.getElementById("progress-bar").style.width = "{{ percentage_voted }}%";
-            </script>
+
+    <div class="strip-container">
+        <div class="strip">
+            <p>Content for Strip 1</p>
+        </div>
+        <div class="strip">
+            <p>Content for Strip 2</p>
+        </div>
+        <div class="strip">
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: {{ percentage_voted }}%;"></div>
+            </div>
         </div>
     </div>
     <div class="table-container">
         <div class="table-column">
-            <div class="strip">tetxt</div>
             <table>
                 <thead>
                     <tr>
