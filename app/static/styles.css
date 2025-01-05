@@ -241,6 +241,12 @@ button:hover, .button:hover {
     margin-bottom: 10px; /* Optional: spacing below the container */
 }
 
+.strip-content {
+    display: flex; /* Arrange items in a row */
+    align-items: center; /* Align items vertically */
+    gap: 10px; /* Space between <p> and <a> */
+}
+
 .strip {
     flex: 1; /* All strips take equal width */
     height: 80px;
@@ -256,21 +262,47 @@ button:hover, .button:hover {
 }
 
 .progress-bar-container {
-    width: 100%; /* Full width of the strip */
-    height: 20px; /* Height of the progress bar */
-    background-color: #f3f3f3; /* Light gray background */
-    border-radius: 10px; /* Rounded corners */
-    overflow: hidden; /* Clip overflowing content */
-    margin-bottom: 10px;
+    display: flex; /* Flexbox layout for horizontal alignment */
+    align-items: center; /* Vertically center the content */
+    width: 100%; /* Full width */
+    height: 40px; /* Increased height for better visibility */
+    background-color: #f3f3f3; /* Optional: light background for the container */
+    border-radius: 5px; /* Optional: rounded corners */
+    padding: 5px; /* Optional: padding for aesthetics */
+    box-sizing: border-box;
+    gap: 10px; /* Space between progress bar and percentage box */
 }
 
 .progress-bar {
-    height: 100%; /* Fill container height */
-    background-color: #007bff; /* Progress bar color */
-    border-radius: 10px 0 0 10px; /* Rounded corners on the left */
-    transition: width 0.3s ease; /* Smooth progress change */
-    transition: width 0.3s ease; /* Smooth progress change */
+    flex: 1; /* Take up remaining width */
+    height: 100%; /* Full height */
+    background-color: #e0e0e0; /* Light gray background for the progress bar */
+    border-radius: 5px; /* Optional: rounded corners */
+    overflow: hidden; /* Ensure the bar-fill doesn't overflow */
+    position: relative; /* For relative positioning of child elements */
 }
+
+.bar-fill {
+    height: 100%; /* Full height */
+    background-color: #d17d82; /* Ocean blue color for the progress fill */
+    border-radius: 5px; /* Optional: rounded corners */
+    transition: width 0.3s ease; /* Smooth transition for width changes */
+}
+
+.percentage-box {
+    width: 50px; /* Fixed width for the percentage box */
+    height: 100%; /* Full height to align with the progress bar */
+    background-color: #ffffff; /* White background */
+    display: flex; /* Flexbox layout for centering content */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    border: 1px solid #ddd; /* Optional: border for aesthetics */
+    border-radius: 5px; /* Optional: rounded corners */
+    font-size: 14px; /* Font size for the percentage */
+    font-weight: bold; /* Make the text bold */
+    color: #333; /* Dark text color */
+}
+
 
 
 /* Text progress bar */

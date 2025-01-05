@@ -12,17 +12,25 @@
 
     <div class="strip-container">
         <div class="strip">
-            <p>Content for Strip 1</p>
+            <div class="strip-content">
+                <p>Last visited chart : </p> <a href="{{ url_for('wykres', chart_id=last_chart) }}" class="square dark-theme">{{ last_chart }}</a>
+            </div>
         </div>
         <div class="strip">
-            <p>Content for Strip 2</p>
+            <p>[WORK_IN_PROGRESS]</p>
         </div>
         <div class="strip">
             <div class="progress-bar-container">
-                <div class="progress-bar" style="width: {{ percentage_voted }}%;"></div>
+                <!-- Progress bar -->
+                <div class="progress-bar">
+                    <div class="bar-fill" style="width: {{ percentage_voted }}%;"></div>
+                </div>
+                <!-- Percentage box -->
+                <div class="percentage-box">{{ percentage_voted }}%</div>
             </div>
         </div>
     </div>
+    
     <div class="table-container">
         <div class="table-column">
             <table>
@@ -41,12 +49,7 @@
                                     {{ chart.chart_id }}
                                 </a>
                             </th>
-                            <td class="item-col">
-                                <div class="votes-progress-container">
-                                    <div class="votes-progress-bar" style="width: 60%;"></div> <!-- Placeholder percentage -->
-                                    <span>{{ chart.votes_summary }}</span>
-                                </div>
-                            </td>
+                            <td class="item-col">{{ chart.votes_summary }}</td>
                             <td class="item-col">
                                 <a href="{{ url_for('user_chart_timespans_list', user_id=user_id, chart_id=chart.chart_id) }}" class='square dark-theme'>
                                     >
