@@ -397,6 +397,7 @@ def wykres():
 
     user = db.first_or_404(sa.select(User).where(User.id == current_user.id)) # wczytanie obiektu użytkownik 
     chart_id = request.args.get('chart_id', default = None, type = int)
+    print(chart_id)
     if chart_id: # wyświetlanie podanego wykresu, jeżeli nie podany, domyślnie ostatni wykres
         chart = db.first_or_404(sa.select(Chart).where(Chart.id == chart_id))
     else:
@@ -407,6 +408,7 @@ def wykres():
     # Determine previous and next chart IDs
     prev_chart_id = chart_id - 1 if chart_id > 1 else None
     next_chart_id = chart_id + 1 if chart_id < total_charts else None
+    print(next_chart_id)
 
     return render_template("wykres.html", chart_id = chart_id, prev_chart_id=prev_chart_id, next_chart_id=next_chart_id)    
 
@@ -420,6 +422,7 @@ def api_wykres():
     ## Getting the right chart
     user = db.first_or_404(sa.select(User).where(User.id == current_user.id)) # wczytanie obiektu użytkownik 
     chart_id = request.args.get('chart_id', default = 1, type = int)
+    print(f"[api_wykres()] chart_id : {chart_id}")
     if chart_id: # wyświetlanie podanego wykresu, jeżeli nie podany, domyślnie ostatni wykres
         chart = db.first_or_404(sa.select(Chart).where(Chart.id == chart_id))
     else:

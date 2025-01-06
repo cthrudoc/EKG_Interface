@@ -5,7 +5,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const timespanTable = document.getElementById('timespanTable');
     const allPlots = [tester1, tester2, tester3];
 
-    fetch('/api/wykres')
+    // Get chart_id from the current URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const chartId = urlParams.get('chart_id') || 1; // Default to 1 if not present
+    console.log('[chartID] chart_id : ', chartId)
+
+    fetch(`/api/wykres?chart_id=${chartId}`)
         .then(response => response.json())
         .then(data => {
             console.log('[wykres.js] Received data:', data);  // [DEBUG] 
