@@ -453,7 +453,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.row-unfold').forEach(button => {
                 button.addEventListener('click', function () {
                     const currentRow = this.closest('tr');
-                    const start = parseFloat(currentRow.dataset.start);
+                    const start = parseFloat(currentRow.dataset.start); // [BUG] For some reason, start doesn't get updated and always uses one from the first row.
                     const end = parseFloat(currentRow.dataset.end);
 
                     if (isNaN(start) || isNaN(end)) {
